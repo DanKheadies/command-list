@@ -2,6 +2,7 @@ Create the Project:
 go to firebase
 setup name, analytics, etc.
 
+
 For Flutter/Android:
 select Android 
 enter package name
@@ -11,7 +12,43 @@ download google-services.json file
 - android > app -> google-services.json
 add dependencies
 - android > build.gradle -> classpath 'google-services'
+- android > app > build.gradle -> implementation 'google.firbase'
+add plugin
+- android > app > build.gradle -> apply plugin 'google'
+(?) initialize firebase_core in main.dart
+(?) add multidex
+- android > app > build.gradle -> implementation 'android.multidex'
+- android > app > build.gradle -> defaultConfig -> multiDexEnabled true
 
+
+For Flutter/iOS:
+select iOS
+enter package name
+- ios > right-click Runner > Reveal in Finder > open Runner.xcodeproj
+-- camel-case, lowercase first
+register app
+download GoogleService-Info.plist
+- XCode via Runner.xcodeproj > Runner > Runner -> GoogleService-Info.plist
+(?) add firebase with cocoapods
+- (?) ios > pod init (if no Podfile)
+(?) add pod
+- (?) ios > Podfile > inside target 'Runner' do -> pod 'Firebase/Service'
+(?) update json ios versions
+- (?) ios > Pods > Local Podspevs > *.json -> "ios": "10.0" (highest #)
+(?) indicate and update platform
+- (?) ios > Podfile > platform :ios, '10.0'
+- (?) ios > pod install
+(?) initialize firebase_core in main.dart
+
+
+For Flutter:
+install firebase_core, firebase_auth, cloud_firestore
+(?) initialize firebase_core in main.dart
+(?) update pods for iOS
+- (?) pod repo update
+(?) update cocoapods (if needed)
+- (?) sudo gem install cocoapods --pre
+(?) pod setup
 
 
 For Web:

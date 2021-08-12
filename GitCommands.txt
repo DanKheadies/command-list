@@ -4,6 +4,7 @@ Install:
 git init
 - in source
 
+
 Link to GitHub:
 setup repo in GitHub via website
 git remote add origin https://repo.git
@@ -15,14 +16,17 @@ git push -u origin master
 - might have to enter username & password if not signed in (or cache info)
 - might need to use git push --set-upstream origin master
 
+
 Cloning from GitHub:
 git clone https://repo.git
 - open file after Cloning
+
 
 Switching to a different repo:
 setup repo in GitHub via website
 git remote set-url origin git://new.url.here
 do standard upload (see above)
+
 
 Checks:
 git fetch
@@ -33,12 +37,13 @@ git merge origin/master
 git pull
 - fetches & merges in a single setup
 
+
 Cleanup:
 git remote rm origin
 - also delete on website
 
 rm -rf .git
-- removes sub-folder git connections
+- semi-removes sub-folder git connections
 
 Standard:
 git status

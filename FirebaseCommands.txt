@@ -1,0 +1,29 @@
+Create the Project:
+go to firebase
+setup name, analytics, etc.
+
+For Flutter/Android:
+select Android 
+enter package name
+- android > app > build.gradle -> applicationId
+register app
+download google-services.json file
+- android > app -> google-services.json
+add dependencies
+- android > build.gradle -> classpath 'google-services'
+
+
+
+For Web:
+npm init
+npm install --save firebase
+(include import files)
+(provide config values)
+(initialize)
+
+For Web & Local Hosting (CLI):
+(see above)
+firebase init
+firebase login*
+npm run build
+firebase deploy

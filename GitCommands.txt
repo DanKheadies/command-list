@@ -1,0 +1,48 @@
+Git Commands
+
+Install:
+git init
+- in source
+
+Link to GitHub:
+setup repo in GitHub via website
+git remote add origin https://repo.git
+- git remote -v (to see status)
+do standard upload
+- git add .
+- git commit -m "The message"
+git push -u origin master
+- might have to enter username & password if not signed in (or cache info)
+- might need to use git push --set-upstream origin master
+
+Cloning from GitHub:
+git clone https://repo.git
+- open file after Cloning
+
+Switching to a different repo:
+setup repo in GitHub via website
+git remote set-url origin git://new.url.here
+do standard upload (see above)
+
+Checks:
+git fetch
+git checkout origin/master
+- see remote contents
+git merge origin/master
+- merge local w/ remote contents
+git pull
+- fetches & merges in a single setup
+
+Cleanup:
+git remote rm origin
+- also delete on website
+
+Standard:
+git status
+git add .
+git commit -m "the description"
+git push
+
+git branch
+git remote
+git branch -r

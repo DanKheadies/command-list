@@ -54,13 +54,19 @@ install firebase_core, firebase_auth, cloud_firestore
 For Web:
 npm init
 npm install --save firebase
-(include import files)
-(provide config values)
-(initialize)
+register on firebase
+- for web (after creating project)
+- (ignore?: include import files)
+- (ignore?: provide config values)
+initialize (see below)
 
 For Web & Local Hosting (CLI):
 (see above)
 firebase init
+- select features needed (follow wizard in console)
+- public directory: dist 
 firebase login*
+add custom domain
+- see Hosting in Firebase console
 npm run build
 firebase deploy

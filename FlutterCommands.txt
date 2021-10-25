@@ -25,8 +25,8 @@ Installing for Local Testing
 flutter run --release
 - troubleshoot w/ 'flutter clean'
 
-Upgrading:
-flutter upgrade
+Check devices:
+flutter devices
 
 Get all yaml packages:
 fluter packages get

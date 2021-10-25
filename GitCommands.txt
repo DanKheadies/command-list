@@ -20,6 +20,8 @@ git push -u origin master
 Cloning from GitHub:
 git clone https://repo.git
 - open file after Cloning
+npm i package
+- might require a package as well
 
 
 Switching to a different repo:
@@ -37,6 +39,9 @@ git merge origin/master
 git pull
 - fetches & merges in a single setup
 
+git status 2>/dev/null; echo $?
+- inside git repo; should return 0 (not 128)
+
 
 Cleanup:
 git remote rm origin
@@ -44,6 +49,7 @@ git remote rm origin
 
 rm -rf .git
 - semi-removes sub-folder git connections
+
 
 Standard:
 git status

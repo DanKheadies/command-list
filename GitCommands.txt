@@ -20,7 +20,7 @@ git push -u origin master
 Cloning from GitHub:
 git clone https://repo.git
 - open file after Cloning
-npm i package
+(?) npm i package
 - might require a package as well
 
 

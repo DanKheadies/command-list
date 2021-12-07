@@ -30,3 +30,33 @@ flutter devices
 
 Get all yaml packages:
 fluter packages get
+
+Release on iOS
+update pubspec.yaml version
+open Runner.xcodeproj
+- check display name
+- check bundle identifier
+- sign in
+- check assets
+- check info.plist and user permissions requests
+flutter build ipa
+setup bundle id
+- go to developer.apple.com
+- go to certificates, identifiers, and profiles
+- go to identifiers
+- add new
+ - App IDs -> App
+ - match to xcode 
+ - select capabilities / services
+ - register
+setup app on store
+- go to appstoreconnect.apple.com
+- add New App
+- fill out info & create
+submit a build
+- open newly created archive (see vs code output)
+- Validate app
+- next -> next -> always allow -> validate -> done
+- distribute app
+ - app store connect -> upload -> next -> next -> upload -> done
+testflight vs. full submit

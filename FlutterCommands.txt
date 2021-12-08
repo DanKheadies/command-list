@@ -39,6 +39,7 @@ open Runner.xcodeproj
 - sign in
 - check assets
 - check info.plist and user permissions requests
+- add iPad images / app icons (all sizes?)
 flutter build ipa
 setup bundle id
 - go to developer.apple.com

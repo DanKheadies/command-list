@@ -4,6 +4,7 @@ setup name, analytics, etc.
 
 
 For Flutter/Android:
+go to firebase console
 select Android 
 enter package name
 - android > app > build.gradle -> applicationId
@@ -22,33 +23,25 @@ add plugin
 
 
 For Flutter/iOS:
+go to firebase console
 select iOS
-enter package name
-- ios > right-click Runner > Reveal in Finder > open Runner.xcodeproj
--- camel-case, lowercase first
+enter info
+- app bundle id
+ - ios > right-click Runner > Reveal in Finder > open Runner.xcodeproj
+ - camel-case, lowercase first
 register app
 download GoogleService-Info.plist
-- XCode via Runner.xcodeproj > Runner > Runner -> GoogleService-Info.plist
-(?) add firebase with cocoapods
-- (?) ios > pod init (if no Podfile)
-(?) add pod
-- (?) ios > Podfile > inside target 'Runner' do -> pod 'Firebase/Service'
-(?) update json ios versions
-- (?) ios > Pods > Local Podspevs > *.json -> "ios": "10.0" (highest #)
-(?) indicate and update platform
-- (?) ios > Podfile > platform :ios, '10.0'
-- (?) ios > pod install
-(?) initialize firebase_core in main.dart
-
-
-For Flutter:
-install firebase_core, firebase_auth, cloud_firestore
-(?) initialize firebase_core in main.dart
-(?) update pods for iOS
-- (?) pod repo update
-(?) update cocoapods (if needed)
-- (?) sudo gem install cocoapods --pre
-(?) pod setup
+- add into XCode
+ - Runner.xcodeproj > Runner > Runner -> GoogleService-Info.plist -> Finish
+- (?) add into project
+skip Firebase SDK & code init (for Swift / XCode dev?)
+continue to console
+(VS code) open Podfile
+- uncomment line #2 (platform)
+- update version to highest in Pods -> Local Podspecs -> all jsons highest version
+cd ios
+(?) pod update
+pod install
 
 
 For Web:

@@ -21,6 +21,10 @@ see if "dart:html" is added to file and remove
 flutter clean
 flutter run
 
+Removing excess / old files:
+flutter clean
+flutter pub get
+
 Installing for Local Testing
 flutter run --release
 - troubleshoot w/ 'flutter clean'

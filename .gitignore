@@ -4,3 +4,5 @@
 # But not these files...
 !*.txt
 !.gitignore
+!Firebase_Images
+!Firebase_Images/*

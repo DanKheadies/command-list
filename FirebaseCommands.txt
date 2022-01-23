@@ -8,17 +8,37 @@ go to firebase console
 select Android 
 enter package name
 - android > app > build.gradle -> applicationId
+(?) if using Google Sign In (or other?)
+- info icon's link for debug signing certificate
+- run debug certificate fingerprint command in terminal
+ - default password: 'android'
+- copy / paste SHA1 password
 register app
 download google-services.json file
 - android > app -> google-services.json
-add dependencies
+skip Firebase SDK
+continue to console
+update android min SDK version
+- android > app > build.gradle > defaultConfig > 16 -> 19
+update android compile SDK version
+- android > app > build.gradle > compileSdkVersion > 30 -> 31
+(?) if using Google Sign In (or other?)
+- go to Android apps
+- add fingerprint for SHA-256
+- save
+- add CFBundleURLTypes to iOS > Runner > Info.plist 
+ - see Firebase_Images > CFBundleURLTypes.png
+(?) add dependencies
 - android > build.gradle -> classpath 'google-services'
-- android > app > build.gradle -> implementation 'google.firbase'
-add plugin
+ - https://developers.google.com/android/guides/google-services-plugin
+- android > app > build.gradle -> implementation 'google.firebase'
+ - https://firebase.google.com/docs/android/setup
+(?) add plugin
 - android > app > build.gradle -> apply plugin 'google'
 (?) initialize firebase_core in main.dart
 (?) add multidex
 - android > app > build.gradle -> implementation 'android.multidex'
+ - https://developer.android.com/studio/build/multidex
 - android > app > build.gradle -> defaultConfig -> multiDexEnabled true
 
 
@@ -33,15 +53,15 @@ register app
 download GoogleService-Info.plist
 - add into XCode
  - Runner.xcodeproj > Runner > Runner -> GoogleService-Info.plist -> Finish
-- (?) add into project
 skip Firebase SDK & code init (for Swift / XCode dev?)
 continue to console
 (VS code) open Podfile
+- if no Podfile, run 'pod install' in ios or edit and save pubspec.yaml
+ - (?) may fail b/c needs commands below
 - uncomment line #2 (platform)
 - update version to highest in Pods -> Local Podspecs -> all jsons highest version
-cd ios
-(?) pod update
-pod install
+pod update
+- (?) pod install
 
 
 For Web:
@@ -63,3 +83,33 @@ add custom domain
 - see Hosting in Firebase console
 npm run build
 firebase deploy
+
+
+For Functions:
+initialize
+- (?) firebase login
+- firebase init Functions
+- select project
+- select Javascript
+- don't use ESLint
+- install NPM dependencies
+deploy
+- (?) upgrade to Blaze plan
+- firebase deploy --only functions
+
+
+For Push Notifications & Cloud Messaging:
+initialize
+- access Cloud Messaging (in Engage)
+- main steps (https://firebase.flutter.dev/docs/messaging/overview/)
+- iOS install steps (https://firebase.flutter.dev/docs/messaging/apple-integration/)
+ - identifiers step: look for one that already exists and modify the name (e.g. "XC ...")
+- (*) install steps (https://petercoding.com/firebase/2021/05/04/using-firebase-cloud-messaging-in-flutter/)
+- (*) install steps (https://medium.com/flutter-clan/push-notifications-in-flutter-1-59c7f0570137)
+- (?) install steps (https://medium.com/firebase-tips-tricks/how-to-use-firebase-cloud-messaging-in-flutter-a15ca69ff292)
+- (?) install steps (https://blog.logrocket.com/flutter-push-notifications-with-firebase-cloud-messaging/)
+iOS
+- (?) permissions (https://pub.dev/packages/permission_handler)
+- (?) setup steps (https://firebase.flutter.dev/docs/messaging/apple-integration/)
+android
+- (?) create Android token in index.js

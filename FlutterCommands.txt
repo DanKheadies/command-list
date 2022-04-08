@@ -15,11 +15,23 @@ flutter run
 - prompts for device after initial setup w/ device / simulator 
 - devices needs to be active / open to activate
 
+Adding Packages:
+go to pub.dev
+- manual search and addition to pubspec.yaml
+
+SHIFT+CMD+P 
+> Dart: Add Dependency
+enter package
+select package
+
 Updating:
 flutter update
 see if "dart:html" is added to file and remove
 flutter clean
 flutter run
+
+Upgrading an older version:
+flutter pub upgrade --major-versions
 
 Removing excess / old files:
 flutter clean
@@ -33,9 +45,10 @@ Check devices:
 flutter devices
 
 Get all yaml packages:
-fluter packages get
+flutter packages get
 
-Release on iOS
+Release on iOS:
+(https://docs.flutter.dev/deployment/ios)
 update pubspec.yaml version
 open Runner.xcodeproj
 - check display name
@@ -44,6 +57,7 @@ open Runner.xcodeproj
 - check assets
 - check info.plist and user permissions requests
 - add iPad images / app icons (all sizes?)
+(?) run once on a real device
 flutter build ipa
 setup bundle id
 - go to developer.apple.com
@@ -60,8 +74,27 @@ setup app on store
 - fill out info & create
 submit a build
 - open newly created archive (see vs code output)
+ - app/build/ios/archive/...
 - Validate app
 - next -> next -> always allow -> validate -> done
 - distribute app
  - app store connect -> upload -> next -> next -> upload -> done
 testflight vs. full submit
+
+Release on Android:
+- steps (https://docs.flutter.dev/deployment/android)
+ - flutter build apk (no --api-split)
+
+
+Update and Submit New build:
+update pubspec.yaml version
+open Runner.xcodeproj
+- update bundle identifier
+flutter build ipa
+submit a build
+- open newly created archive (see vs code output)
+ - app/build/ios/archive/...
+- (?) validate app
+- next -> next -> always allow -> validate -> done
+- distribute app
+ - app store connect -> upload -> next -> next -> upload -> done

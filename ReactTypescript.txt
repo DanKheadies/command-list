@@ -1,0 +1,23 @@
+Initial Install:
+npx create-react-app APP-NAME-NO-CAPS --template typescript
+cd APP-NAME-NO-CAPS
+
+Post Every Clone:
+npm install
+
+npm i react-router react-router-dom react-toastify react-icons
+npm i boostrap sass
+npm i axios
+
+npm i react-css-theme-switcher
+https://javascript.plainenglish.io/the-best-way-to-add-dark-mode-to-your-react-sass-project-ce3ae3bd8616
+https://codesandbox.io/s/admiring-shirley-kdewh?from-embed=&file=/src/styles/index.scss
+
+npm i react-lazyload
+npm i --save-dev @types/react-lazyload
+
+
+Update Project from package.json
+npm install
+
+npm audit -fix

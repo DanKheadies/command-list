@@ -57,6 +57,17 @@ git add .
 git commit -m "the description"
 git push
 
+
+New Branch:
+git checkout -b NEW-BRANCH
+
 git branch
 git remote
 git branch -r
+
+
+Updating a Branch:
+git checkout master (start from local master)
+git pull (newest updates from origin/master)
+git checkout branch-to-update
+git merge master (update from local)

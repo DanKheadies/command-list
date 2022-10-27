@@ -20,4 +20,11 @@ npm i --save-dev @types/react-lazyload
 Update Project from package.json
 npm install
 
+npm update
+
 npm audit -fix
+sudo npm audit fix --force
+
+npm start
+npm run build
+firebase deploy

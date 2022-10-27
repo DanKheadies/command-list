@@ -1,0 +1,106 @@
+Apple Pay:
+add dependencies
+- pay
+developer.apple.com -> certificates -> identifiers -> Merchant IDs -> add
+- description
+- identifier
+certificates -> Services -> Apple pay Payment Processing Certificate 
+- select new merchant Id 
+open xcodeproj -> Signing & Capabilities 
+- +Capability 
+- Apple pay
+- (log into anything needed)
+update deployment target to 11
+- podfile
+pod update
+double check Runner.entitlements file in iOS -> Runner 
+
+
+Google Maps - Adding:
+- https://codelabs.developers.google.com/codelabs/google-maps-in-flutter#0
+
+
+Google Maps - Hiding API Keys:
+Android
+- https://dev.to/no2s14/hide-your-api-keys-from-your-android-manifest-file-with-flutter-using-local-properties-3f4e
+- note: "manifestPlaceholders += []"
+iOS
+- https://appunite.com/blog/how-to-securely-use-google-maps-api-key-in-android-i-os-or-flutter-project
+
+
+Google Pay:
+add dependencies
+- pay 
+update minSdkVersion to 19
+- android -> app -> build.gradle -> android -> defaultConfig
+
+
+Hive - Local Storage:
+add dependencies 
+- hive
+- hive_flutter
+add dev_dependencies
+- build_runner
+- hive_generator
+add to model using hive
+- @HiveType(typeId: #) above the model
+- @HiveField(#) for each property 
+- part 'model_name.g.dart';
+run
+- flutter packages pub run build_runner build
+initialize
+- await Hive.initFlutter()
+- Hive.registerAdapter(ModelAdapter()); (import models)
+update 
+- make edits
+- delete g.dart 
+- run: flutter packages pub run build_runner build
+
+
+Stripe:
+setup account with Stripe
+- need Blaze plan for Stripe
+stripePublishableKey
+- copy and paste into .env
+- gitignore
+install dep & settings
+- flutter_stripe
+- android/build.gradle
+ - (?) google-services dep version (> 4.3.13)
+ - (?) kotlin version (> 1.6.10)
+- android/app/build.gradle
+ - minSdkVersion (21?)
+ - (?) targetSdkVersion to flutter.targetSdkVersion
+ - (?) add dep / update version -> implementation platform('com.google.firebase:firebase-boom:30.2.0')
+- FlutterFragmentActivity in /app/src/main/kotlin.../MainActivity.kt 
+ - import io.flutter.embedding.android.FlutterFragmentActivity
+ - switch to FlutterFragmentActivity
+- android styles in app/src/main/res/values
+ - Launch: Theme.AppCompat.Light.NoActionBar
+ - Normal: Theme.MaterialComponents
+- ios -> Runner -> deployment version = 12
+- ios -> Podfile -> version = 12
+main
+- async
+- WidgetsFlutterBinding.ensureInitialized()
+- Stripe.publishableKey = stripePublishableKey
+- await Stripe.instance.applySettings()
+ios -> cd ios
+- pod update
+cloud functions
+- create Firebase project
+- install dep (cloud_firestore)
+- creat server folder
+- in /project/server -> firebase init functions
+ - select project
+ - javascript
+ - y / y / y 
+- cd functions 
+ - npm install stripe --save
+ - firebase functions:config:set stripe.testkey="secret/private_key"
+ - add stripe to index.js (this step is involved; see code)
+- deploy functions in server
+ - cd ..
+ - remove "predeploy" lint / array content from firebase.json
+ - firebase deploy --only functions
+

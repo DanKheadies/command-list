@@ -24,8 +24,8 @@ SHIFT+CMD+P
 enter package
 select package
 
-Updating:
-flutter update
+Upgrading / Updating:
+flutter upgrade
 see if "dart:html" is added to file and remove
 flutter clean
 flutter run
@@ -56,8 +56,11 @@ open Runner.xcodeproj
 - sign in
 - check assets
 - check info.plist and user permissions requests
-- add iPad images / app icons (all sizes?)
-(?) run once on a real device
+add iPad images / app icons (all sizes?)
+ - install flutter_launcher_icons
+ - (see pub.dev for specifics)
+ - remove_alpha_ios: true
+ - set all image_paths to the icon to useun once on a real device
 flutter build ipa
 setup bundle id
 - go to developer.apple.com
@@ -82,19 +85,40 @@ submit a build
 testflight vs. full submit
 
 Release on Android:
-- steps (https://docs.flutter.dev/deployment/android)
- - flutter build apk (no --api-split)
+steps (https://docs.flutter.dev/deployment/android)
+- install flutter_launcher_icons
+ - (see pub.dev for specifics)
+ - remove_alpha_ios: true
+ - set all image_paths to the icon to use
+- keystore
+ - keytool -genkey -v -keystore ~/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+ - key.properties
+ - add to android -> app -> build.gradle
+ - build types w/ siging configs
+ - release
+- build
+ - flutter build appbundle
 
 
 Update and Submit New build:
 update pubspec.yaml version
 open Runner.xcodeproj
-- update bundle identifier
+- update version #
+- update build #
 flutter build ipa
 submit a build
 - open newly created archive (see vs code output)
  - app/build/ios/archive/...
-- (?) validate app
-- next -> next -> always allow -> validate -> done
+- (x) validate app (checks and balances; not necessary)
+ - next -> next -> always allow -> validate -> done
 - distribute app
  - app store connect -> upload -> next -> next -> upload -> done
+- login to appstoreconnect 
+ - go to testflight
+ - Manage Compliance
+
+
+ Android info
+ keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
+
+ 

@@ -71,3 +71,12 @@ git checkout master (start from local master)
 git pull (newest updates from origin/master)
 git checkout branch-to-update
 git merge master (update from local)
+
+
+
+Hide Flutter Projects:
+# Firebase
+/android/app/google-services.json
+/android/app/local.properties
+/io/firebase_app_id_file.json
+/ios/Runner/GoogleService-Info.plist

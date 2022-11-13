@@ -15,6 +15,7 @@ Express Option (if flutterfire is installed):
 prep flutter project
 - android/app/build.gradle > defaultConfig > applicationId "com.mycompany.app_name"
 - ios > xcodeproj > signing & capabilities > bundle identifier "com.mycompany.appName"
+- macos > xcodeproj > signing & capabilities > bundle identifier "com.mycompany.appName"
 cd [project]
 flutterfire configure
 - select project
@@ -25,6 +26,9 @@ android
 - update android min SDK version
  - android > app > build.gradle > defaultConfig > minSdkVersion > 19 (for now)
 - gitignore google-services.json
+- need multidex
+ - open android simulator
+ - flutter run (down below) and it will ask / setup automatically
 iOS
 - podfile
  - uncomment line 2 in Podfile & make sure it's 11.0 (for now)
@@ -34,15 +38,25 @@ iOS
  - cd ios
  - pod update
 - gitignore GoogleService-Info.plist
+macOS
+- podfile
+ - update line 1 platform :osx to 10.13 (for now)
+- minimum deployment in Runner.xcodeproj
+ - upgrade minimum macOS version to 10.13 (for now) 
+- update Pods
+ - cd ios
+ - pod update
+- gitignore GoogleService-Info.plist
 web
 - firebase init 
 - select features
  - if using Cloud Firestore, setup in Firebase before moving on
+ - if using Cloud Firestore, set Default GCP resource location in Project Settings
  - if using Cloud Functions, switch to Blaze plan
 - use existing project 
 - select firebase-project 
-- yes esLint
 - typescript
+- yes esLint
 - set public directory to 'build/web' 
 - configure as single page 'N'
 - (?) setup auto deploys w/ github (n)
@@ -130,7 +144,7 @@ web
 - firebase deploy
 
 
-Enable Firebase / Flutterfire:
+Enable Flutterfire:
 verify flutterfire is enabled
 - flutterfire configure
 - (if not run) dart pub global activate flutterfire_cli
@@ -167,7 +181,101 @@ deploy
 - firebase deploy --only functions
 
 
-For Push Notifications & Cloud Messaging:
+For Analytics:
+dependencies
+- firebase_analytics
+instantialize in main
+- FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+disable Ad Id
+- add to top line: $FirebaseAnalyticsWithoutAdIdSupport = true
+ - /ios/Podfile
+ - /macos/Podfile
+[more stuff...]
+
+
+For Push Notification & Cloud Messaging (2.0):
+(following: https://firebase.flutter.dev/docs/messaging/usage)
+install dependencies
+- firebase_core
+- firebase_messaging
+- flutter_local_notifications
+setup firebase project
+update project name
+- android/app/build.gradle > defaultConfig > applicationId "com.mycompany.app_name"
+- ios > xcodeproj > signing & capabilities > bundle identifier "com.mycompany.appName"
+flutterfire configure
+- select project
+- select types
+setup main 
+- import firebase_core, firebase_messaging, & firebase_options
+- async 
+- ensureInitialized
+- initialize Firebase w/ options
+create instance of FirebaseMessaging (in main and/or in seperate file)
+set NotificationSettings and request permission(s)
+set Android versions 
+- compileSdkVersion (>= 33 ?)
+- minSdkVersion (>= 19 ?)
+- need multidex
+ - flutter run and it will ask / setup automatically
+enable Push Notifications for iOS
+- Runner > Targets > Signing & Capabilities > +Capabilities > Push Notifications
+- Runner > Targets > Signing & Capabilities > +Capabilities > Background Modes
+ - Background fetch 
+ - Remote notifications 
+link APN w/ FCM for iOS
+- sign into developer.apple.com > Certificates, IDs & Profiles > Keys > +
+ - Key Name: [PROJECT]FbCnAPNS
+ - enable Apple Push Notification service (APNs) > Continue > Register 
+ - download (p8 file)
+ - copy Key ID
+- go to Firebase Project > Settings > Cloud Messaging > iOS app configuration > Upload
+ - browse & select p8 
+ - copy & paste Key ID
+ - enter Team ID (https://developer.apple.com/account/ > Membership details)
+- register App Identifier (might already be present as 'XC com [business] [appName] and enabled)
+ - (?) developer.apple.com > Certificates, IDs & Profiles > Identifiers > +
+ - (?) App IDs > App > Bundle ID = com.[business].[appName]
+ - (?) enable Push Notifications 
+- generate provisioning profile 
+ - developer.apple.com > Certificates, IDs & Profiles > Profiles > +
+ - iOS App Development > Select an App ID > select App Identifier (see above)
+ - Select Certificate (or create one, then come back)
+ - (?) download and (double) click to install 
+allow notification images for iOS 
+- project's Runner.xcodeproj > File > New > Target...
+- iOS > Notification Service Extension
+  - Product Name: ImageNotification
+  - (?) Team: select it
+  - Language: Objective-C 
+  - Finish > Activate 
+- add to Podfile (to ios and macos(?))
+ - (at the bottom) 
+  target 'ImageNotification' do
+    use_frameworks!
+    pod 'Firebase/Messaging'
+  end
+- (?) several warnings, can resolve, but need to? 1 example below
+- (?) add to Runner.xcodeproj > Runner > Flutter > Release > insert below other #include?
+ - #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"
+- pod install
+ - cd ios
+ - cd macos (?)
+use extension helper
+- project's Runner.xcodeproj > Runner > ImageNotification > ImagineNotification.m
+- #import "FirebaseMessaging.h" (below NotificationService.h)
+(?) add permission requests for devices
+get (and save) Android token
+set Android token to user account
+set Foreground Messages
+- FirebaseMessaging.onMessage.listen( ... )
+- Firebase -> Cloud Messaging -> Compose notification 
+ - just title and text (and target app, i.e. android for now)
+set Background Messages
+- backgroundHandler
+
+
+(FIRST ATTEMPT) For Push Notifications & Cloud Messaging:
 initialize
 - access Cloud Messaging (in Engage)
 - main steps (https://firebase.flutter.dev/docs/messaging/overview/)
@@ -182,38 +290,3 @@ iOS
 - (?) setup steps (https://firebase.flutter.dev/docs/messaging/apple-integration/)
 android
 - (?) create Android token in index.js
-
-
-For Push Notification & Cloud Messaging (2.0):
-(following: https://firebase.flutter.dev/docs/messaging/usage)
-install dependencies
-- (?) firebase cli
-- firebase_core
-- firebase_messaging
-setup firebase project
-(?) update project name (com.example.changeAllThisAndBefore)
-flutterfire configure
-- select project
-- select types
-setup main 
-- import firebase_core, firebase_messaging, & firebase_options
-- async 
-- ensureInitialized
-- initialize Firebase w/ options
-create instance of FirebaseMessaging (in main and/or in seperate file)
-set NotificationSettings and request permission(s)
-set Android versions 
-- minSdkVersion (>= 19 ?)
-- compileSdkVersion (>= 33 ?)
-(?) add permission requests for devices
-- (?)
-get Android token
-- 
-set Android token to user account
-- 
-set Foreground Messages
-- FirebaseMessaging.onMessage.listen( ... )
-- Firebase -> Cloud Messaging -> Compose notification 
- - just title and text (and target app, i.e. android for now)
-set Background Messages
-- backgroundHandler

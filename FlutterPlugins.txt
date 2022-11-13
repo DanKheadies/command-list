@@ -16,6 +16,16 @@ pod update
 double check Runner.entitlements file in iOS -> Runner 
 
 
+Flutter Launcher Icons:
+add dependencies 
+- flutter_launcher_icons
+(?) add dev_dependencies
+- flutter_launcher_icons
+list flutter_icons below dev_deps
+- https://pub.dev/packages/flutter_launcher_icons
+flutter pub run flutter_launcher_icons:main
+
+
 Google Maps - Adding:
 - https://codelabs.developers.google.com/codelabs/google-maps-in-flutter#0
 

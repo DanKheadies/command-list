@@ -49,6 +49,8 @@ flutter packages get
 
 Release on iOS:
 (https://docs.flutter.dev/deployment/ios)
+check app name
+- ios > Runner > Info.plist > CFBundleName & CFBundleDispayName
 update pubspec.yaml version
 open Runner.xcodeproj
 - check display name
@@ -85,19 +87,21 @@ submit a build
 testflight vs. full submit
 
 Release on Android:
-steps (https://docs.flutter.dev/deployment/android)
-- install flutter_launcher_icons
- - (see pub.dev for specifics)
- - remove_alpha_ios: true
- - set all image_paths to the icon to use
-- keystore
- - keytool -genkey -v -keystore ~/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
- - key.properties
- - add to android -> app -> build.gradle
- - build types w/ siging configs
- - release
-- build
- - flutter build appbundle
+(https://docs.flutter.dev/deployment/android)
+check app name 
+- AndroidManifest -> android:label
+install flutter_launcher_icons
+- (see pub.dev for specifics)
+- remove_alpha_ios: true
+- set all image_paths to the icon to use
+keystore
+- keytool -genkey -v -keystore ~/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+- key.properties
+- add to android -> app -> build.gradle
+- build types w/ siging configs
+- release
+build
+- flutter build appbundle
 
 
 Update and Submit New build:

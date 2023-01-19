@@ -63,8 +63,13 @@ add iPad images / app icons (all sizes?)
  - (see pub.dev for specifics)
  - remove_alpha_ios: true
  - set all image_paths to the icon to useun once on a real device
+(?) avoid [ITMS-90078: Missing Push Notification Entitlement]
+ - enable Push Notifications in Runner.xcodeproj
+  - Signing & Capabilities > +Capability > Push Notifications
 flutter build ipa
-setup bundle id
+(?) setup bundle id
+- (note: gets auto setup as 'XC __APP__' thru VS & Xcode)
+ - (during 'flutter build ipa' i think)
 - go to developer.apple.com
 - go to certificates, identifiers, and profiles
 - go to identifiers
@@ -80,8 +85,8 @@ setup app on store
 submit a build
 - open newly created archive (see vs code output)
  - app/build/ios/archive/...
-- Validate app
-- next -> next -> always allow -> validate -> done
+- (?) validate app
+ - next -> next -> always allow -> validate -> done
 - distribute app
  - app store connect -> upload -> next -> next -> upload -> done
 testflight vs. full submit

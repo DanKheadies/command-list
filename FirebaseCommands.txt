@@ -9,22 +9,37 @@ add dependencies
 - cloud_firestore
 - firebase_core 
 - firebase_auth
+- firebase_analytics (?)
+- firebase_messaging (?)
+- flutter_local_notifications (?)
 
 
 Express Option (if flutterfire is installed):
 prep flutter project
-- android/app/build.gradle > defaultConfig > applicationId "com.mycompany.app_name"
-- ios > xcodeproj > signing & capabilities > bundle identifier "com.mycompany.appName"
-- macos > xcodeproj > signing & capabilities > bundle identifier "com.mycompany.appName"
+- android
+ - android/app/build.gradle > defaultConfig > applicationId "com.my_company.app_name"
+ - (?) android/app/src/debug > AndroidManifest.xml > "com.my_company.app_name"
+ - (?) android/app/src/main > AndroidManifest.xml > "com.my_company.app_name"
+ - (?) android/app/src/profile > AndroidManifest.xml > "com.my_company.app_name"
+ - (?) android/app/src/main/kotlin/... > MainActivity.kt > "com.my_company.app_name"
+- iOS
+ - ios > xcodeproj > signing & capabilities > bundle identifier "com.myCompany.appName"
+- macOS
+ - macos > xcodeproj > signing & capabilities > bundle identifier "com.myCompany.appName"
+prep firebase project
+- add auth methods
+- add database
+- enable functions (upgrades to Blaze)
+- enable messaging (via below)
 cd [project]
 flutterfire configure
 - select project
 - select platforms 
 android 
 - update android compile SDK version
- - android > app > build.gradle > compileSdkVersion > 31 (for now)
+ - android > app > build.gradle > compileSdkVersion > 33 (for now)
 - update android min SDK version
- - android > app > build.gradle > defaultConfig > minSdkVersion > 19 (for now)
+ - android > app > build.gradle > defaultConfig > minSdkVersion > 21 (for now)
 - gitignore google-services.json
 - need multidex
  - open android simulator
@@ -171,10 +186,10 @@ Auth with GoogleSignIn:
 For Functions:
 initialize
 - (?) firebase login
-- firebase init Functions
+- firebase init functions
 - select project
-- select Javascript
-- don't use ESLint
+- select Typescript
+- use ESLint
 - install NPM dependencies
 deploy
 - (?) upgrade to Blaze plan
@@ -201,8 +216,16 @@ install dependencies
 - flutter_local_notifications
 setup firebase project
 update project name
-- android/app/build.gradle > defaultConfig > applicationId "com.mycompany.app_name"
-- ios > xcodeproj > signing & capabilities > bundle identifier "com.mycompany.appName"
+- android
+ - android/app/build.gradle > defaultConfig > applicationId "com.my_company.app_name"
+ - (?) android/app/src/debug > AndroidManifest.xml > "com.my_company.app_name"
+ - (?) android/app/src/main > AndroidManifest.xml > "com.my_company.app_name"
+ - (?) android/app/src/profile > AndroidManifest.xml > "com.my_company.app_name"
+ - (?) android/app/src/main/kotlin/... > MainActivity.kt > "com.my_company.app_name"
+- iOS
+ - ios > xcodeproj > signing & capabilities > bundle identifier "com.myCompany.appName"
+- macOS
+ - macos > xcodeproj > signing & capabilities > bundle identifier "com.myCompany.appName"
 flutterfire configure
 - select project
 - select types
@@ -211,13 +234,30 @@ setup main
 - async 
 - ensureInitialized
 - initialize Firebase w/ options
-create instance of FirebaseMessaging (in main and/or in seperate file)
-set NotificationSettings and request permission(s)
 set Android versions 
 - compileSdkVersion (>= 33 ?)
-- minSdkVersion (>= 19 ?)
+- minSdkVersion (>= 21 ?)
 - need multidex
  - flutter run and it will ask / setup automatically
+set Android channel, icon, color & intent
+- AndroidManifest > after </activity>
+- add string.xml to res > values
+ - define default notification here (see past examples)
+- channel
+ - name="com.google.firebase.messaging.default_notification_channel_id"
+ - value="@string/default_notification_channel_id"
+- icon
+ - name="com.google.firebase.messaging.default_notification_icon"
+ - resource="@drawable/icon_name_no_file_extension"
+ - add icon_small.png to drawable
+- (?) color 
+ - name="com.google.firebase.messaging.default_notification_color"
+ - resource="@android:color/red"
+- (?) intent (intent-filter)
+ - action name="FLUTTER_NOTIFICATION_CLICK"
+ - category name="android.intent.category.DEFAULT"
+- (?) event (intent-filter)
+ - action name="com.google.firebase.MESSAGING_EVENT"
 enable Push Notifications for iOS
 - Runner > Targets > Signing & Capabilities > +Capabilities > Push Notifications
 - Runner > Targets > Signing & Capabilities > +Capabilities > Background Modes
@@ -233,7 +273,7 @@ link APN w/ FCM for iOS
  - browse & select p8 
  - copy & paste Key ID
  - enter Team ID (https://developer.apple.com/account/ > Membership details)
-- register App Identifier (might already be present as 'XC com [business] [appName] and enabled)
+- (?) register App Identifier (already present as 'XC com [business] [appName] and enabled w/ flutterfire)
  - (?) developer.apple.com > Certificates, IDs & Profiles > Identifiers > +
  - (?) App IDs > App > Bundle ID = com.[business].[appName]
  - (?) enable Push Notifications 
@@ -242,7 +282,8 @@ link APN w/ FCM for iOS
  - iOS App Development > Select an App ID > select App Identifier (see above)
  - Select Certificate (or create one, then come back)
  - (?) download and (double) click to install 
-allow notification images for iOS 
+- (?) ask permision in Info.plist
+(?) allow notification images for iOS 
 - project's Runner.xcodeproj > File > New > Target...
 - iOS > Notification Service Extension
   - Product Name: ImageNotification
@@ -261,12 +302,16 @@ allow notification images for iOS
 - pod install
  - cd ios
  - cd macos (?)
-use extension helper
+(?) use extension helper
 - project's Runner.xcodeproj > Runner > ImageNotification > ImagineNotification.m
 - #import "FirebaseMessaging.h" (below NotificationService.h)
-(?) add permission requests for devices
-get (and save) Android token
-set Android token to user account
+(?) enable Cloud Messaging API (Legacy)
+get (and save) FCM token to user account
+- 
+set NotificationSettings and request permission(s)
+- 
+create instance of FirebaseMessaging (in main and/or in seperate file)
+- 
 set Foreground Messages
 - FirebaseMessaging.onMessage.listen( ... )
 - Firebase -> Cloud Messaging -> Compose notification 

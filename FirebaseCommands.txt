@@ -2,6 +2,7 @@ Create the Project:
 go to firebase
 setup name, analytics, etc.
 create flutter project
+git
 
 
 Installing:
@@ -18,14 +19,17 @@ Express Option (if flutterfire is installed):
 prep flutter project
 - android
  - android/app/build.gradle > defaultConfig > applicationId "com.my_company.app_name"
- - (?) android/app/src/debug > AndroidManifest.xml > "com.my_company.app_name"
- - (?) android/app/src/main > AndroidManifest.xml > "com.my_company.app_name"
- - (?) android/app/src/profile > AndroidManifest.xml > "com.my_company.app_name"
- - (?) android/app/src/main/kotlin/... > MainActivity.kt > "com.my_company.app_name"
+ - android/app/src/debug > AndroidManifest.xml > "com.my_company.app_name"
+ - android/app/src/main > AndroidManifest.xml > "com.my_company.app_name"
+ - android/app/src/main > AndroidManifest.xml > label > "Cruise Calls"
+ - android/app/src/profile > AndroidManifest.xml > "com.my_company.app_name"
+ - android/app/src/main/kotlin/... > MainActivity.kt > "com.my_company.app_name"
 - iOS
  - ios > xcodeproj > signing & capabilities > bundle identifier "com.myCompany.appName"
+ - update Display Name to name of choice: "MyApp"
 - macOS
  - macos > xcodeproj > signing & capabilities > bundle identifier "com.myCompany.appName"
+ - update Display Name to name of choice: "MyApp"
 prep firebase project
 - add auth methods
 - add database
@@ -48,7 +52,7 @@ iOS
 - podfile
  - uncomment line 2 in Podfile & make sure it's 11.0 (for now)
 - minimum deployment in Runner.xcodeproj
- - upgrade minimum iOS version to 11 (for now) 
+ - upgrade minimum iOS version to 12 (for now) 
 - update Pods
  - cd ios
  - pod update
@@ -191,6 +195,13 @@ initialize
 - select Typescript
 - use ESLint
 - install NPM dependencies
+add functions in index.tsx
+- use only "send" and "sendMulticast" for now (?) 
+(?) check java is updated on mac
+fireabase init emulators
+- select functions & firestore
+- enter > enter > yes > enter > yes
+firebase emulators:start
 deploy
 - (?) upgrade to Blaze plan
 - firebase deploy --only functions
@@ -218,10 +229,10 @@ setup firebase project
 update project name
 - android
  - android/app/build.gradle > defaultConfig > applicationId "com.my_company.app_name"
- - (?) android/app/src/debug > AndroidManifest.xml > "com.my_company.app_name"
- - (?) android/app/src/main > AndroidManifest.xml > "com.my_company.app_name"
- - (?) android/app/src/profile > AndroidManifest.xml > "com.my_company.app_name"
- - (?) android/app/src/main/kotlin/... > MainActivity.kt > "com.my_company.app_name"
+ - android/app/src/debug > AndroidManifest.xml > "com.my_company.app_name"
+ - android/app/src/main > AndroidManifest.xml > "com.my_company.app_name"
+ - android/app/src/profile > AndroidManifest.xml > "com.my_company.app_name"
+ - android/app/src/main/kotlin/... > MainActivity.kt > "com.my_company.app_name"
 - iOS
  - ios > xcodeproj > signing & capabilities > bundle identifier "com.myCompany.appName"
 - macOS
@@ -241,7 +252,7 @@ set Android versions
  - flutter run and it will ask / setup automatically
 set Android channel, icon, color & intent
 - AndroidManifest > after </activity>
-- add string.xml to res > values
+- add strings.xml to res > values
  - define default notification here (see past examples)
 - channel
  - name="com.google.firebase.messaging.default_notification_channel_id"
@@ -249,7 +260,7 @@ set Android channel, icon, color & intent
 - icon
  - name="com.google.firebase.messaging.default_notification_icon"
  - resource="@drawable/icon_name_no_file_extension"
- - add icon_small.png to drawable
+ - add icon_small.png to drawable (NOTE THE UNDERSCORE)
 - (?) color 
  - name="com.google.firebase.messaging.default_notification_color"
  - resource="@android:color/red"
@@ -263,6 +274,28 @@ enable Push Notifications for iOS
 - Runner > Targets > Signing & Capabilities > +Capabilities > Background Modes
  - Background fetch 
  - Remote notifications 
+- enable in Info.plist
+ - <key>UIApplicationSceneManifest</key>
+ - <dict>
+ -   <key>UISceneConfigurations</key>
+ -   <dict/>
+ - </dict>
+update deployment target
+- podfile line 2 (if not done)
+ - platform to '12.0'
+- xcodeproj > Runner > Info > 
+ - iOS Deployment Target to '12.0'
+ - check warnings > Perform Changes
+- xcworkspace > Pods
+ - iOS Deployment Target to '12.0'
+ - check warnings > Perform Changes
+ - (?) select FirebaseCore > update iOS Deployment Target to 12
+target GoogleService-Info.plist membership to Runner
+- open Runner.xcodeproj > select GoogleService-Info.plist 
+- check Runner in Target Membership (right panel)
+update AppDelegate.Swift
+- import Firebase
+- FirebaseApp.configure() (above GeneratedPluginRegistrant...)
 link APN w/ FCM for iOS
 - sign into developer.apple.com > Certificates, IDs & Profiles > Keys > +
  - Key Name: [PROJECT]FbCnAPNS
@@ -273,16 +306,21 @@ link APN w/ FCM for iOS
  - browse & select p8 
  - copy & paste Key ID
  - enter Team ID (https://developer.apple.com/account/ > Membership details)
-- (?) register App Identifier (already present as 'XC com [business] [appName] and enabled w/ flutterfire)
- - (?) developer.apple.com > Certificates, IDs & Profiles > Identifiers > +
- - (?) App IDs > App > Bundle ID = com.[business].[appName]
- - (?) enable Push Notifications 
+- update App Identifier (already present as 'XC com [business] [appName]' and enabled w/ flutterfire)
+ - developer.apple.com > Certificates, IDs & Profiles > Identifiers > select 'XC com [business] [appName]'
+ - update description
+ - verify Push Notifications are enabled
+ - (?) configure SSL certification
 - generate provisioning profile 
  - developer.apple.com > Certificates, IDs & Profiles > Profiles > +
  - iOS App Development > Select an App ID > select App Identifier (see above)
- - Select Certificate (or create one, then come back)
- - (?) download and (double) click to install 
-- (?) ask permision in Info.plist
+ - select certificate (or create one, then come back) and Continue
+ - select testing device and Continue
+ - create name '[App Name] PP'
+ - download and (double) click to install 
+  - (?) opens Xcode
+  - (?) (do after next step ?) update / clear errors > Perform Changes
+
 (?) allow notification images for iOS 
 - project's Runner.xcodeproj > File > New > Target...
 - iOS > Notification Service Extension
@@ -306,6 +344,7 @@ link APN w/ FCM for iOS
 - project's Runner.xcodeproj > Runner > ImageNotification > ImagineNotification.m
 - #import "FirebaseMessaging.h" (below NotificationService.h)
 (?) enable Cloud Messaging API (Legacy)
+
 get (and save) FCM token to user account
 - 
 set NotificationSettings and request permission(s)
@@ -318,6 +357,17 @@ set Foreground Messages
  - just title and text (and target app, i.e. android for now)
 set Background Messages
 - backgroundHandler
+enable Cloud Messaging API (Legacy)
+- Project Settings > Cloud Messaging > dots > Manage
+- Enable
+(?) enable Firebase In-App Messaging API 
+- APIs & Services > + Enable APIS & Services > search Firebase Messaging > Firebase In-App Messaging API
+- Enable
+(?) configure credentials
+- APIs & Services > Credentials > Configure Consent screen
+(?) generate new private key
+- Project Settings > Service accounts > Generate new private key
+(?) run app via xcode
 
 
 (FIRST ATTEMPT) For Push Notifications & Cloud Messaging:

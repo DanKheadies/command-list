@@ -5,17 +5,14 @@ create flutter project
 git
 
 
-Installing:
-add dependencies
+Minimal Install:
+add dependencies to yaml
 - cloud_firestore
 - firebase_core 
-- firebase_auth
-- firebase_analytics (?)
-- firebase_messaging (?)
-- flutter_local_notifications (?)
-
-
-Express Option (if flutterfire is installed):
+- firebase_auth 
+- firebase_messaging
+- flutter_local_notifications
+- (?) firebase_analytics
 prep flutter project
 - android
  - android/app/build.gradle > defaultConfig > applicationId "com.my_company.app_name"
@@ -26,9 +23,11 @@ prep flutter project
  - android/app/src/main/kotlin/... > MainActivity.kt > "com.my_company.app_name"
 - iOS
  - ios > xcodeproj > signing & capabilities > bundle identifier "com.myCompany.appName"
- - update Display Name to name of choice: "MyApp"
+ - ios > Runner > Info.plist > update CFBundleDisplayName
+ - (?) update Display Name to name of choice: "MyApp"
 - macOS
  - macos > xcodeproj > signing & capabilities > bundle identifier "com.myCompany.appName"
+ - ios > Runner > Info.plist > update CFBundleDisplayName
  - update Display Name to name of choice: "MyApp"
 prep firebase project
 - add auth methods
@@ -50,9 +49,13 @@ android
  - flutter run (down below) and it will ask / setup automatically
 iOS
 - podfile
- - uncomment line 2 in Podfile & make sure it's 11.0 (for now)
-- minimum deployment in Runner.xcodeproj
- - upgrade minimum iOS version to 12 (for now) 
+ - uncomment line 2 in Podfile & make sure it's 12.0 (for now)
+- minimum deployment in Runner.xcodeproj > Runner > Info > iOS Deployment Target 
+ - upgrade minimum iOS version to 12.0 (for now) 
+ - check warnings > Perform Changes
+- minimum deployment in Runner.xcworkspace > Pods > iOS Deployment Target 
+ - upgrade minimum iOS version to 12.0 (for now) 
+ - check warnings > Perform Changes
 - update Pods
  - cd ios
  - pod update
@@ -85,171 +88,13 @@ initialize in main
 - WidgetsFlutterBinding.ensureInitialized()
 - await Firebase.initializeApp( options: DefaultFirebaseOptions.currentPlatform )
 flutter run
+- on Android simulator
 - may take a couple of minutes
 (web) flutter build web 
 - firebase deploy
 
 
-Express Options needs (?) the following at a global level: 
-- flutterfire-cli
-- firebase-tools
-
-
-Manual Option (without flutterfire):
-android
-- go to firebase console
-- select Android 
-- enter package name
- - android > app > build.gradle -> applicationId
-- register app
-- download google-services.json file
- - android > app -> google-services.json
-- add google-services.json to gitignore
-- skip Firebase SDK
-- continue to console
-- update android min SDK version
- - android > app > build.gradle > defaultConfig > 16 -> 19 (?)
-- update android compile SDK version
- - android > app > build.gradle > compileSdkVersion > 30 -> 31 (?)
-- add dependencies
- - android > build.gradle -> classpath 'com.google.gms:google-services:X.Y.Z'
-  - https://developers.google.com/android/guides/google-services-plugin
-- add plugin
- - android > app > build.gradle -> apply plugin: 'com.google.gms.google-services'
-  - https://firebase.google.com/docs/android/setup
-  - (3rd step in the 'Add Firebase to your Android app)
-- (DELETE?) add implementation
- - android > app > build.gradle -> implementation 'com.google.gms.google-services'
- - https://firebase.google.com/docs/android/setup
-- (DELETE?) add multidex
- - android > app > build.gradle -> implementation 'android.multidex'
-  - https://developer.android.com/studio/build/multidex
- - android > app > build.gradle -> defaultConfig -> multiDexEnabled true
-iOS
-- go to firebase console
-- select iOS
-- enter info
- - app bundle id
-  - ios > right-click Runner > Reveal in Finder > open Runner.xcodeproj
-  - camel-case, lowercase first
-- register app
-- download GoogleService-Info.plist
- - add into XCode
-  - Runner.xcodeproj > Runner > Runner -> GoogleService-Info.plist -> Finish
-- add GoogleService-Info.plist to gitignore
-- skip Firebase SDK & code init (for Swift / XCode dev?)
-- continue to console
-- (DELETE? b/c above) open Podfile
- - if no Podfile, run 'pod install' in ios or edit and save pubspec.yaml
-  - (?) may fail b/c needs commands below
- - uncomment line #2 (platform)
- - update version to highest in Pods -> Local Podspecs -> all jsons highest version
-- (DELETE? b/c above) pod update
- - (?) pod install
-web
-- create flutter project
-- create firebase project
-- (?) install npm
-- (?) npm install -g firebase-tools
-- firebase login
-- firebase init 
-- select Hosting (w/ Github)
-- use existing project 
-- select firebase-project 
-- set public directory to 'build/web' 
-- configure as single page 'y'
-- (?) setup auto deploys w/ github (n)
-- flutter build web 
-- firebase deploy
-
-
-Enable Flutterfire:
-verify flutterfire is enabled
-- flutterfire configure
-- (if not run) dart pub global activate flutterfire_cli
- - make sure the path is included in the .zprofile
- - cmd + shift + . to see invis
- - export PATH="$PATH":"$HOME/.pub-cache/bin"
-- try flutterfire configure in new terminal 
-
-
-Auth with GoogleSignIn:
-(?) if using Google Sign In (or other?)
-- info icon's link for debug signing certificate
-- run debug certificate fingerprint command in terminal
- - default password: 'android'
-- copy / paste SHA1 password
-(?) if using Google Sign In (or other?)
-- go to Android apps
-- add fingerprint for SHA-256
-- save
-- add CFBundleURLTypes to iOS > Runner > Info.plist 
- - see Firebase_Images > CFBundleURLTypes.png
-
-
-For Functions:
-initialize
-- (?) firebase login
-- firebase init functions
-- select project
-- select Typescript
-- use ESLint
-- install NPM dependencies
-add functions in index.tsx
-- use only "send" and "sendMulticast" for now (?) 
-(?) check java is updated on mac
-fireabase init emulators
-- select functions & firestore
-- enter > enter > yes > enter > yes
-firebase emulators:start
-deploy
-- (?) upgrade to Blaze plan
-- firebase deploy --only functions
-
-
-For Analytics:
-dependencies
-- firebase_analytics
-instantialize in main
-- FirebaseAnalytics analytics = FirebaseAnalytics.instance;
-disable Ad Id
-- add to top line: $FirebaseAnalyticsWithoutAdIdSupport = true
- - /ios/Podfile
- - /macos/Podfile
-[more stuff...]
-
-
-For Push Notification & Cloud Messaging (2.0):
-(following: https://firebase.flutter.dev/docs/messaging/usage)
-install dependencies
-- firebase_core
-- firebase_messaging
-- flutter_local_notifications
-setup firebase project
-update project name
-- android
- - android/app/build.gradle > defaultConfig > applicationId "com.my_company.app_name"
- - android/app/src/debug > AndroidManifest.xml > "com.my_company.app_name"
- - android/app/src/main > AndroidManifest.xml > "com.my_company.app_name"
- - android/app/src/profile > AndroidManifest.xml > "com.my_company.app_name"
- - android/app/src/main/kotlin/... > MainActivity.kt > "com.my_company.app_name"
-- iOS
- - ios > xcodeproj > signing & capabilities > bundle identifier "com.myCompany.appName"
-- macOS
- - macos > xcodeproj > signing & capabilities > bundle identifier "com.myCompany.appName"
-flutterfire configure
-- select project
-- select types
-setup main 
-- import firebase_core, firebase_messaging, & firebase_options
-- async 
-- ensureInitialized
-- initialize Firebase w/ options
-set Android versions 
-- compileSdkVersion (>= 33 ?)
-- minSdkVersion (>= 21 ?)
-- need multidex
- - flutter run and it will ask / setup automatically
+Push Notification & Cloud Messaging:
 set Android channel, icon, color & intent
 - AndroidManifest > after </activity>
 - add strings.xml to res > values
@@ -264,10 +109,10 @@ set Android channel, icon, color & intent
 - (?) color 
  - name="com.google.firebase.messaging.default_notification_color"
  - resource="@android:color/red"
-- (?) intent (intent-filter)
+- intent (intent-filter)
  - action name="FLUTTER_NOTIFICATION_CLICK"
  - category name="android.intent.category.DEFAULT"
-- (?) event (intent-filter)
+- event (intent-filter)
  - action name="com.google.firebase.MESSAGING_EVENT"
 enable Push Notifications for iOS
 - Runner > Targets > Signing & Capabilities > +Capabilities > Push Notifications
@@ -280,22 +125,18 @@ enable Push Notifications for iOS
  -   <key>UISceneConfigurations</key>
  -   <dict/>
  - </dict>
-update deployment target
-- podfile line 2 (if not done)
- - platform to '12.0'
-- xcodeproj > Runner > Info > 
- - iOS Deployment Target to '12.0'
- - check warnings > Perform Changes
-- xcworkspace > Pods
- - iOS Deployment Target to '12.0'
- - check warnings > Perform Changes
- - (?) select FirebaseCore > update iOS Deployment Target to 12
+ - <key>FirebaseAppDelegateProxyEnabled</key>
+ - <false/>
 target GoogleService-Info.plist membership to Runner
 - open Runner.xcodeproj > select GoogleService-Info.plist 
 - check Runner in Target Membership (right panel)
 update AppDelegate.Swift
 - import Firebase
 - FirebaseApp.configure() (above GeneratedPluginRegistrant...)
+- (?) application.registerForRemoteNotifications()
+- (?) if #available(iOS 10.0, *) {
+ - (?) UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
+- (?) }
 link APN w/ FCM for iOS
 - sign into developer.apple.com > Certificates, IDs & Profiles > Keys > +
  - Key Name: [PROJECT]FbCnAPNS
@@ -320,37 +161,12 @@ link APN w/ FCM for iOS
  - download and (double) click to install 
   - (?) opens Xcode
   - (?) (do after next step ?) update / clear errors > Perform Changes
-
-(?) allow notification images for iOS 
-- project's Runner.xcodeproj > File > New > Target...
-- iOS > Notification Service Extension
-  - Product Name: ImageNotification
-  - (?) Team: select it
-  - Language: Objective-C 
-  - Finish > Activate 
-- add to Podfile (to ios and macos(?))
- - (at the bottom) 
-  target 'ImageNotification' do
-    use_frameworks!
-    pod 'Firebase/Messaging'
-  end
-- (?) several warnings, can resolve, but need to? 1 example below
-- (?) add to Runner.xcodeproj > Runner > Flutter > Release > insert below other #include?
- - #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"
-- pod install
- - cd ios
- - cd macos (?)
-(?) use extension helper
-- project's Runner.xcodeproj > Runner > ImageNotification > ImagineNotification.m
-- #import "FirebaseMessaging.h" (below NotificationService.h)
 (?) enable Cloud Messaging API (Legacy)
-
+- Project Settings > Cloud Messaging > dots > Manage
+- Enable
 get (and save) FCM token to user account
-- 
 set NotificationSettings and request permission(s)
-- 
 create instance of FirebaseMessaging (in main and/or in seperate file)
-- 
 set Foreground Messages
 - FirebaseMessaging.onMessage.listen( ... )
 - Firebase -> Cloud Messaging -> Compose notification 
@@ -358,30 +174,50 @@ set Foreground Messages
 set Background Messages
 - backgroundHandler
 enable Cloud Messaging API (Legacy)
-- Project Settings > Cloud Messaging > dots > Manage
-- Enable
-(?) enable Firebase In-App Messaging API 
-- APIs & Services > + Enable APIS & Services > search Firebase Messaging > Firebase In-App Messaging API
-- Enable
-(?) configure credentials
-- APIs & Services > Credentials > Configure Consent screen
-(?) generate new private key
-- Project Settings > Service accounts > Generate new private key
-(?) run app via xcode
 
 
-(FIRST ATTEMPT) For Push Notifications & Cloud Messaging:
+For Functions:
 initialize
-- access Cloud Messaging (in Engage)
-- main steps (https://firebase.flutter.dev/docs/messaging/overview/)
-- iOS install steps (https://firebase.flutter.dev/docs/messaging/apple-integration/)
- - identifiers step: look for one that already exists and modify the name (e.g. "XC ...")
-- (*) install steps (https://petercoding.com/firebase/2021/05/04/using-firebase-cloud-messaging-in-flutter/)
-- (*) install steps (https://medium.com/flutter-clan/push-notifications-in-flutter-1-59c7f0570137)
-- (?) install steps (https://medium.com/firebase-tips-tricks/how-to-use-firebase-cloud-messaging-in-flutter-a15ca69ff292)
-- (?) install steps (https://blog.logrocket.com/flutter-push-notifications-with-firebase-cloud-messaging/)
-iOS
-- (?) permissions (https://pub.dev/packages/permission_handler)
-- (?) setup steps (https://firebase.flutter.dev/docs/messaging/apple-integration/)
-android
-- (?) create Android token in index.js
+- (?) firebase login
+- firebase init functions
+- select project
+- select Typescript
+- use ESLint
+- install NPM dependencies
+add functions in index.tsx
+- use only "send" and "sendMulticast" for now (?) 
+(?) check java is updated on mac
+fireabase init emulators
+- select functions & firestore
+- enter > enter > yes > enter > yes
+firebase emulators:start
+deploy
+- (?) upgrade to Blaze plan
+- firebase deploy --only functions
+
+
+Auth with GoogleSignIn:
+(?) if using Google Sign In (or other?)
+- info icon's link for debug signing certificate
+- run debug certificate fingerprint command in terminal
+ - default password: 'android'
+- copy / paste SHA1 password
+(?) if using Google Sign In (or other?)
+- go to Android apps
+- add fingerprint for SHA-256
+- save
+- add CFBundleURLTypes to iOS > Runner > Info.plist 
+ - see Firebase_Images > CFBundleURLTypes.png
+
+
+Analytics:
+dependencies
+- firebase_analytics
+instantialize in main
+- FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+disable Ad Id
+- add to top line: $FirebaseAnalyticsWithoutAdIdSupport = true
+ - /ios/Podfile
+ - /macos/Podfile
+[more stuff...]
+

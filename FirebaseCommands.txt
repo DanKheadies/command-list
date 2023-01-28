@@ -127,9 +127,10 @@ enable Push Notifications for iOS
  - </dict>
  - <key>FirebaseAppDelegateProxyEnabled</key>
  - <false/>
-target GoogleService-Info.plist membership to Runner
+tweak GoogleService-Info.plist 
 - open Runner.xcodeproj > select GoogleService-Info.plist 
-- check Runner in Target Membership (right panel)
+ - check Runner in Target Membership (right panel)
+- move GoogleService-Info.plist to Runner folder in Runner (below Info)
 update AppDelegate.Swift
 - import Firebase
 - FirebaseApp.configure() (above GeneratedPluginRegistrant...)

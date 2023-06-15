@@ -10,34 +10,40 @@ add dependencies to yaml
 - cloud_firestore
 - firebase_core 
 - firebase_auth 
+- firebase_storage
 - firebase_messaging
 - flutter_local_notifications
 - (?) firebase_analytics
+- (?) firebase_analytics_web
 prep flutter project
 - android
  - android/app/build.gradle > defaultConfig > applicationId "com.my_company.app_name"
  - android/app/src/debug > AndroidManifest.xml > "com.my_company.app_name"
  - android/app/src/main > AndroidManifest.xml > "com.my_company.app_name"
- - android/app/src/main > AndroidManifest.xml > label > "Cruise Calls"
+ - android/app/src/main > AndroidManifest.xml > label > "App Name"
  - android/app/src/profile > AndroidManifest.xml > "com.my_company.app_name"
  - android/app/src/main/kotlin/... > MainActivity.kt > "com.my_company.app_name"
 - iOS
  - ios > xcodeproj > signing & capabilities > bundle identifier "com.myCompany.appName"
  - ios > Runner > Info.plist > update CFBundleDisplayName
- - (?) update Display Name to name of choice: "MyApp"
+ - (?) update Display Name to name of choice: "My App"
 - macOS
  - macos > xcodeproj > signing & capabilities > bundle identifier "com.myCompany.appName"
  - ios > Runner > Info.plist > update CFBundleDisplayName
- - update Display Name to name of choice: "MyApp"
+ - update Display Name to name of choice: "My App"
 prep firebase project
 - add auth methods
 - add database
+- add storage
 - enable functions (upgrades to Blaze)
 - enable messaging (via below)
+- (?) enable analytics (done in the init setup)
 cd [project]
 flutterfire configure
+ - flutterfire configure --account not@primary.account
 - select project
 - select platforms 
+- gitignore firebase-options.dart (if public directory)
 android 
 - update android compile SDK version
  - android > app > build.gradle > compileSdkVersion > 33 (for now)
@@ -49,12 +55,12 @@ android
  - flutter run (down below) and it will ask / setup automatically
 iOS
 - podfile
- - uncomment line 2 in Podfile & make sure it's 12.0 (for now)
+ - uncomment line 2 in Podfile & make sure it's 13.0 (for now)
 - minimum deployment in Runner.xcodeproj > Runner > Info > iOS Deployment Target 
- - upgrade minimum iOS version to 12.0 (for now) 
+ - upgrade minimum iOS version to 13.0 (for now) 
  - check warnings > Perform Changes
-- minimum deployment in Runner.xcworkspace > Pods > iOS Deployment Target 
- - upgrade minimum iOS version to 12.0 (for now) 
+- (?) minimum deployment in Runner.xcworkspace > Pods > iOS Deployment Target 
+ - upgrade minimum iOS version to 13.0 (for now) 
  - check warnings > Perform Changes
 - update Pods
  - cd ios
@@ -92,6 +98,7 @@ flutter run
 - may take a couple of minutes
 (web) flutter build web 
 - firebase deploy
+(mobile web) flutter build web --web-renderer canvaskit
 
 
 Push Notification & Cloud Messaging:
@@ -188,7 +195,7 @@ initialize
 add functions in index.tsx
 - use only "send" and "sendMulticast" for now (?) 
 (?) check java is updated on mac
-fireabase init emulators
+firebase init emulators
 - select functions & firestore
 - enter > enter > yes > enter > yes
 firebase emulators:start
@@ -214,8 +221,13 @@ Auth with GoogleSignIn:
 Analytics:
 dependencies
 - firebase_analytics
-instantialize in main
-- FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+- firebase_core
+initialize Firebase (see above)
+initialize Analytics at the root
+- static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+- static FirebaseAnalyticsObserver observer = FirebaseAnalyticsObserver(analytics: analytics);
+- MaterialApp > navigatorObservers: <navigatorObservers>[observer],
+- pass on analytics & observer as needed
 disable Ad Id
 - add to top line: $FirebaseAnalyticsWithoutAdIdSupport = true
  - /ios/Podfile

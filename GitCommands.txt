@@ -22,6 +22,8 @@ git clone https://repo.git
 - open file after Cloning
 (?) npm i package
 - might require a package as well
+(?) flutter clean > flutter run
+- might require a "cleansing"
 
 
 Switching to a different repo:
@@ -65,13 +67,14 @@ git branch
 git remote
 git branch -r
 
+git push -u origin NEW-BRANCH
+
 
 Updating a Branch:
 git checkout master (start from local master)
 git pull (newest updates from origin/master)
 git checkout branch-to-update
 git merge master (update from local)
-
 
 
 Hide Flutter Projects:

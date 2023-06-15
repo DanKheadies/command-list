@@ -25,15 +25,99 @@ flutter pub run flutter_launcher_icons
 
 
 Google Maps - Adding:
-- https://codelabs.developers.google.com/codelabs/google-maps-in-flutter#0
-
-
-Google Maps - Hiding API Keys:
-Android
-- https://dev.to/no2s14/hide-your-api-keys-from-your-android-manifest-file-with-flutter-using-local-properties-3f4e
-- note: "manifestPlaceholders += []"
-iOS
-- https://appunite.com/blog/how-to-securely-use-google-maps-api-key-in-android-i-os-or-flutter-project
+(https://codelabs.developers.google.com/codelabs/google-maps-in-flutter#0)
+enable APIs 
+- console.cloud.google.com > APIs & Services > Enabled APIs and Services > + ENABLE APIS AND SERVICES
+- search google maps
+ - Maps SDK for android > Enable
+ - Maps SDK for iOS > Enable
+ - (?) Maps Javascript API > Enable
+- add Key Restrictions
+ - iOS
+  - Set an application restriction > iOS apps
+  - iOS restrictions > + Add > co.islandInnovations.cruiseCallsApp
+  - (?) API restrictions > Restrict key > com.bundleCompany.appNameId
+  - Save
+ - android 
+  - Set an application restriction > Android apps 
+  - Android restrictions > + Add
+   - Package name > com.bundle_company.app_name_id
+   - SHA-1 certificate fingerprint
+    - terminal > run > keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
+    - Done
+  - (?) API restrictions > Retrict key > select Maps SDK for Android > OK
+  - Save
+ - (?) Browser > ...
+- copy keys to secrets
+ - actually needed to be save / stored else where
+- (?) Configure consent screen (all Keys?)
+ - External (?)
+ - Add stuff (some not required?)
+ - Scopes (?)
+add dependencies
+- google_maps_flutter
+- (?) google_maps_flutter_web
+upgrade ios platform to 13
+- Podfile > platform :ios '13.0'
+- cd iOS > pod update
+upgrade Android minSDK
+- android > app > build.graddle > android > defaultConfig > minSdkVersion 20
+add API key for iOS 
+- ios > Runner > AppDelegate.swift
+- import GoogleMaps
+- above GeneratedPluginRegistrant
+ - GMSSerivces.provideAPIKey("YOUR-API-KEY")
+add API key for Android
+- android > app > src > main > AndroidManifest.xml > <application> > below flutterEmbedding (bottom) 
+- <meta-data 
+    android:name="com.google.android.geo.API_KEY"
+    android:value="YOUR-KEY-HERE" />
+add API key for Web
+- (?) web > index.html
+hide Android API key 
+(https://dev.to/no2s14/hide-your-api-keys-from-your-android-manifest-file-with-flutter-using-local-properties-3f4e)
+- android > local.properties > segment.gmpKey=YOUR_API_KEY_REAL_VALUE
+- android > app > build.gradle > end of def (top section)
+ - def gmpKey = localProperties.getProperty('segment.gmpKey')
+   if (gmpKey == null) {
+       gmpKey = "no_key"
+   }
+- android > app > build.gradle > android > defaultConfig > at bottom of {}
+ - manifestPlaceholders += [gmpKey: gmpKey]
+- update android > app > src > main > AndroidManifest.xml > geo.API_KEY value
+ - android:value="${gmpKey}"
+hide iOS API key
+(https://appunite.com/blog/how-to-securely-use-google-maps-api-key-in-android-i-os-or-flutter-project)
+- (DONE; already present) create config files in Xcode
+ - Runner.xcodeproj > File > New > File > (scroll down to Other) > Configuration Setting File > Release > Create
+ - (repeat) Debug > Create
+- Runner.xcodeproj > Flutter > Release.xconfig > add environment variable
+ - GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY_LABEL_AS_SET_IN_DEBUG
+- Runner.xcodeproj > Flutter > Debug.xcconfig > set the actual key
+ - GOOGLE_MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY_STRING_VALUE
+ - add /ios/Flutter/Debug.xcconfig to gitignore
+ - remove if already tracked: git rm ios/Flutter/Debug.xcconfig --cached
+- Info.plist > add google maps key and string 
+ - <key>googleMapsApiKey</key>
+   <string>$(GOOGLE_MAPS_API_KEY)</string>
+ - <key>NSBonjourServices</key>
+	 <array>
+		 <string>_dartobservatory._tcp</string>
+	 </array>
+- ios > Runner > AppDelegate.swift
+ - GMSServices.provideAPIKey(Bundle.main.object(forInfoDictionaryKey:"googleMapsApiKey") as? String ?? "")
+handle permissions
+- android > app > src > main > AndroidManifest.xml (w/in <manifest> after <application>)
+  - <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+- ios > Runner > Info.plist 
+ - <key>NSLocationAlwaysUsageDescription</key>
+	 <string>This app would like access to your location when in the background.</string>
+	 <key>NSLocationWhenInUseUsageDescription</key>
+	 <string>This app would like access to your location when open.</string>
+instantiate maps
+- see Step 4 (bottom-ish of initial link) OR package deets
 
 
 Google Pay:
@@ -86,8 +170,8 @@ install dep & settings
 - android styles in app/src/main/res/values
  - Launch: Theme.AppCompat.Light.NoActionBar
  - Normal: Theme.MaterialComponents
-- ios -> Runner -> deployment version = 12
-- ios -> Podfile -> version = 12
+- ios -> Runner -> deployment version = 13
+- ios -> Podfile -> version = 13
 main
 - async
 - WidgetsFlutterBinding.ensureInitialized()

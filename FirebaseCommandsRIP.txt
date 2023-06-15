@@ -172,6 +172,8 @@ verify flutterfire is enabled
  - cmd + shift + . to see invis
  - export PATH="$PATH":"$HOME/.pub-cache/bin"
 - try flutterfire configure in new terminal 
+adding a secondary (or more) account
+- firebase login:add secondary@account.com
 
 
 Auth with GoogleSignIn:

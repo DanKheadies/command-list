@@ -15,18 +15,19 @@ add dependencies to yaml
 - flutter_local_notifications
 - (?) firebase_analytics
 - (?) firebase_analytics_web
+- (?) firebase_dynamic_links
 prep flutter project
 - android
+ - android/app/build.gradle > android > namespace "com.my_company.app_name"
  - android/app/build.gradle > defaultConfig > applicationId "com.my_company.app_name"
- - android/app/src/debug > AndroidManifest.xml > "com.my_company.app_name"
- - android/app/src/main > AndroidManifest.xml > "com.my_company.app_name"
+ - (?) android/app/src/debug > AndroidManifest.xml > "com.my_company.app_name"
+ - (?) android/app/src/main > AndroidManifest.xml > "com.my_company.app_name"
  - android/app/src/main > AndroidManifest.xml > label > "App Name"
- - android/app/src/profile > AndroidManifest.xml > "com.my_company.app_name"
+ - (?) android/app/src/profile > AndroidManifest.xml > "com.my_company.app_name"
  - android/app/src/main/kotlin/... > MainActivity.kt > "com.my_company.app_name"
 - iOS
  - ios > xcodeproj > signing & capabilities > bundle identifier "com.myCompany.appName"
  - ios > Runner > Info.plist > update CFBundleDisplayName
- - (?) update Display Name to name of choice: "My App"
 - macOS
  - macos > xcodeproj > signing & capabilities > bundle identifier "com.myCompany.appName"
  - ios > Runner > Info.plist > update CFBundleDisplayName
@@ -49,6 +50,9 @@ android
  - android > app > build.gradle > compileSdkVersion > 33 (for now)
 - update android min SDK version
  - android > app > build.gradle > defaultConfig > minSdkVersion > 21 (for now)
+- update android & google.gms dependencies 
+ - (?) android > build.gradle > dependencies > classpath > 7.4.0 (for now)
+ - android > build.gradle > dependencies > classpath > 4.3.14 (for now) (? 4.3.15)
 - gitignore google-services.json
 - need multidex
  - open android simulator
@@ -59,12 +63,12 @@ iOS
 - minimum deployment in Runner.xcodeproj > Runner > Info > iOS Deployment Target 
  - upgrade minimum iOS version to 13.0 (for now) 
  - check warnings > Perform Changes
-- (?) minimum deployment in Runner.xcworkspace > Pods > iOS Deployment Target 
- - upgrade minimum iOS version to 13.0 (for now) 
- - check warnings > Perform Changes
 - update Pods
  - cd ios
  - pod update
+- minimum deployment in Runner.xcworkspace > Pods > iOS Deployment Target 
+ - upgrade minimum iOS version to 13.0 (for now) 
+ - check warnings > Perform Changes
 - gitignore GoogleService-Info.plist
 macOS
 - podfile
@@ -186,6 +190,7 @@ enable Cloud Messaging API (Legacy)
 
 For Functions:
 initialize
+- (*) should be setup if initialized early on
 - (?) firebase login
 - firebase init functions
 - select project

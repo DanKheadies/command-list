@@ -119,8 +119,8 @@ open Runner.xcworkspace
 - check minimum deployment in Runner & Pods (13.0)
 open ios > Flutter > AppFrameworkInfo.plist 
 - update MinimumOSVersion (13.0)
-flutter build ipa
-submit a build
+(ios) flutter build ipa
+(ios) submit a build
 - open newly created archive (see vs code output)
  - app/build/ios/archive/...
 - (x) validate app (checks and balances; not necessary)
@@ -130,7 +130,8 @@ submit a build
 - login to appstoreconnect 
  - go to testflight
  - Manage Compliance
-flutter build appbundle
+(android) flutter build appbundle
+(android) upload to google play console
 
 
 

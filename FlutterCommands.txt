@@ -47,6 +47,10 @@ flutter devices
 Get all yaml packages:
 flutter packages get
 
+VS Code:
+Search dart files in a folder
+ - ./portclear/lib/**/*.dart
+
 Release on iOS:
 (https://docs.flutter.dev/deployment/ios)
 check app name

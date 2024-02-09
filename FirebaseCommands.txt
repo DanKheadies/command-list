@@ -20,14 +20,11 @@ prep flutter project
 - android
  - android/app/build.gradle > android > namespace "com.my_company.app_name"
  - android/app/build.gradle > defaultConfig > applicationId "com.my_company.app_name"
- - (?) android/app/src/debug > AndroidManifest.xml > "com.my_company.app_name"
- - (?) android/app/src/main > AndroidManifest.xml > "com.my_company.app_name"
  - android/app/src/main > AndroidManifest.xml > label > "App Name"
- - (?) android/app/src/profile > AndroidManifest.xml > "com.my_company.app_name"
  - android/app/src/main/kotlin/... > MainActivity.kt > "com.my_company.app_name"
 - iOS
  - ios > xcodeproj > signing & capabilities > bundle identifier "com.myCompany.appName"
- - ios > Runner > Info.plist > update CFBundleDisplayName
+ - ios > xcodeproj > general > app category & display name
 - macOS
  - macos > xcodeproj > signing & capabilities > bundle identifier "com.myCompany.appName"
  - ios > Runner > Info.plist > update CFBundleDisplayName
@@ -38,21 +35,21 @@ prep firebase project
 - add storage
 - enable functions (upgrades to Blaze)
 - enable messaging (via below)
-- (?) enable analytics (done in the init setup)
 cd [project]
 flutterfire configure
  - flutterfire configure --account not@primary.account
 - select project
 - select platforms 
-- gitignore firebase-options.dart (if public directory)
+- (RIP) allow android updates
+- (RIP) gitignore firebase-options.dart
 android 
 - update android compile SDK version
  - android > app > build.gradle > compileSdkVersion > 33 (for now)
 - update android min SDK version
  - android > app > build.gradle > defaultConfig > minSdkVersion > 21 (for now)
-- update android & google.gms dependencies 
- - (?) android > build.gradle > dependencies > classpath > 7.4.0 (for now)
- - android > build.gradle > dependencies > classpath > 4.3.14 (for now) (? 4.3.15)
+- (?) update android & google.gms dependencies 
+ - (?) android > build.gradle > dependencies > classpath > tools > 7.4.0 (for now)
+ - (?) android > build.gradle > dependencies > classpath > google-services > 4.3.14 (for now) (? 4.3.15)
 - gitignore google-services.json
 - need multidex
  - open android simulator
@@ -63,12 +60,27 @@ iOS
 - minimum deployment in Runner.xcodeproj > Runner > Info > iOS Deployment Target 
  - upgrade minimum iOS version to 13.0 (for now) 
  - check warnings > Perform Changes
-- update Pods
- - cd ios
- - pod update
 - minimum deployment in Runner.xcworkspace > Pods > iOS Deployment Target 
  - upgrade minimum iOS version to 13.0 (for now) 
  - check warnings > Perform Changes
+- update post_install > Podfile (for now)
+  post_install do |installer|
+    installer.pods_project.targets.each do |target|
+      flutter_additional_ios_build_settings(target)
+      target.build_configurations.each do |config|
+      xcconfig_path = config.base_configuration_reference.real_path
+      xcconfig = File.read(xcconfig_path)
+      xcconfig_mod = xcconfig.gsub(/DT_TOOLCHAIN_DIR/, "TOOLCHAIN_DIR")
+      File.open(xcconfig_path, "w") { |file| file << xcconfig_mod }
+      end
+    end
+  end
+- update Pods
+ - cd ios
+ - pod update
+- sandboxing
+ - xcodeproj > Runner > Build Settings > Build Options > User Script Sandboxing > No
+ - fix any errors (?)
 - gitignore GoogleService-Info.plist
 macOS
 - podfile
@@ -103,6 +115,14 @@ flutter run
 (web) flutter build web 
 - firebase deploy
 (mobile web) flutter build web --web-renderer canvaskit
+
+
+Hosting Testing (e.g. Web "TestFlight"):
+(https://firebase.google.com/docs/hosting/test-preview-deploy#preview-channels)
+flutter build web
+firebase hosting:channel:deploy CHANNEL_ID
+- CHANNEL_ID = feature_mission-2-mars
+- https://name-of-project--CHANNEL_ID-hAsH.web.app [expires 2024-02-16 10:07:57]
 
 
 Push Notification & Cloud Messaging:

@@ -19,9 +19,9 @@ double check Runner.entitlements file in iOS -> Runner
 Flutter Launcher Icons:
 add dev_dependencies 
 - flutter_launcher_icons
-list flutter_icons below dev_deps
+list flutter_launcher_icons below dev_deps
 - https://pub.dev/packages/flutter_launcher_icons
-flutter pub run flutter_launcher_icons
+dart run flutter_launcher_icons
 
 
 Google Maps - Adding:

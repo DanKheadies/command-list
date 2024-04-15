@@ -127,7 +127,8 @@ firebase hosting:channel:deploy CHANNEL_ID
 
 Push Notification & Cloud Messaging:
 set Android channel, icon, color & intent
-- AndroidManifest > after </activity>
+- android > app > src > main > AndroidManifest > after </activity>
+ - add meta-data tags w/ defaults (see past examples, see below)
 - add strings.xml to res > values
  - define default notification here (see past examples)
 - channel
@@ -140,10 +141,10 @@ set Android channel, icon, color & intent
 - (?) color 
  - name="com.google.firebase.messaging.default_notification_color"
  - resource="@android:color/red"
-- intent (intent-filter)
+- intent (intent-filter) (inside <activity>)
  - action name="FLUTTER_NOTIFICATION_CLICK"
  - category name="android.intent.category.DEFAULT"
-- event (intent-filter)
+- event (intent-filter) (inside <activity>)
  - action name="com.google.firebase.MESSAGING_EVENT"
 enable Push Notifications for iOS
 - Runner > Targets > Signing & Capabilities > +Capabilities > Push Notifications
@@ -151,18 +152,25 @@ enable Push Notifications for iOS
  - Background fetch 
  - Remote notifications 
 - enable in Info.plist
- - <key>UIApplicationSceneManifest</key>
- - <dict>
- -   <key>UISceneConfigurations</key>
- -   <dict/>
- - </dict>
- - <key>FirebaseAppDelegateProxyEnabled</key>
- - <false/>
-tweak GoogleService-Info.plist 
+ - scene manifest
+  <key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UISceneConfigurations</key>
+		<dict/>
+	</dict>
+  (?) <key>FirebaseAppDelegateProxyEnabled</key>
+  (?) <false/>
+ - background Modes
+  <key>UIBackgroundModes</key>
+  <array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+  </array>
+(?) tweak GoogleService-Info.plist (already done?)
 - open Runner.xcodeproj > select GoogleService-Info.plist 
  - check Runner in Target Membership (right panel)
 - move GoogleService-Info.plist to Runner folder in Runner (below Info)
-update AppDelegate.Swift
+(?) update AppDelegate.Swift (not present in past projects?)
 - import Firebase
 - FirebaseApp.configure() (above GeneratedPluginRegistrant...)
 - (?) application.registerForRemoteNotifications()
@@ -183,7 +191,7 @@ link APN w/ FCM for iOS
  - developer.apple.com > Certificates, IDs & Profiles > Identifiers > select 'XC com [business] [appName]'
  - update description
  - verify Push Notifications are enabled
- - (?) configure SSL certification
+ - configure SSL certification
 - generate provisioning profile 
  - developer.apple.com > Certificates, IDs & Profiles > Profiles > +
  - iOS App Development > Select an App ID > select App Identifier (see above)
@@ -193,7 +201,15 @@ link APN w/ FCM for iOS
  - download and (double) click to install 
   - (?) opens Xcode
   - (?) (do after next step ?) update / clear errors > Perform Changes
-(?) enable Cloud Messaging API (Legacy)
+// Note: to spawn notifications popup on first time app start:
+// 1. initialize in main
+  // FirebaseNotifications().initialize();
+// 2. add Notification NS Key to Info.plist
+  // <key>NSUserNotificationsUsageDescription</key>
+  // <string>Your description goes here.</string>
+// If added in Info.plist, we can edit the text message in the prompt.
+// Otherwise, use Permissions package
+(?) enable Cloud Messaging API (Legacy) (RIP)
 - Project Settings > Cloud Messaging > dots > Manage
 - Enable
 get (and save) FCM token to user account

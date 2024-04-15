@@ -105,6 +105,7 @@ install flutter_launcher_icons
 - set all image_paths to the icon to use
 keystore
 - keytool -genkey -v -keystore ~/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+ - enter keystore password (create now)
 - key.properties
 - add to android -> app -> build.gradle
 - build types w/ siging configs

@@ -1,0 +1,474 @@
+Pre-Configured tools:
+- flutter
+- git
+- firebase-tools
+- flutterfire
+
+Create the project:
+- go to firebase
+- setup name, analytics, etc.
+- create flutter project
+ - remove linux, macos, web & windows
+- create git repo (private)
+ - link git to project
+ - branch(es)
+
+Setup pubspec:
+- add needed dependencies
+ - def include firebase deps
+- flutter_launcher_icons 
+ - add icon & adaptive-icon to assets
+- add assets
+ - copy icons & images
+- add fonts
+- update launcher icons 
+ - dart run flutter_launcher_icons
+
+Prep project for Firebase:
+- android
+ - android/app/build.gradle > android > namespace "co.island_innovations.ii_cruise_calls"
+ - android/app/build.gradle > defaultConfig > applicationId "co.island_innovations.ii_cruise_calls"
+ - android/app/src/main/AndroidManifest.xml > label > "App Name"
+ - android/app/src/main/kotlin/.../MainActivity.kt > "com.my_company.app_name"
+- iOS
+ - ios/Runner.xcodeproj > signing & capabilities > switch Team to Island Innovations Ltd.
+ - ios/Runner.xcodeproj > signing & capabilities > bundle identifier "co.islandInnovations.iiCruiseCalls"
+ - ios/Runner.xcodeproj > general > app category (Business) & display name (CruiseCalls)
+ - ios/Runner/Info.plist > CFBundleDisplayName > CruiseCalls
+
+Prep Firebase project:
+- add auth methods (email/password)
+- add Firestore Database
+ - start in production
+- enable functions (upgrade to Blaze)
+ - note: account under david@portcall.com w/ personal credit card on file
+- enable messaging (via below)
+- git changes
+
+Configure project with Firebase:
+- cd ii_cruise_calls
+- flutterfire configure
+ - flutterfire configure --account david@portcall.com
+- select project 
+- select platforms 
+ - functions failed b/c it needed a "sudo"
+- add to gitignore
+ - android/app/google-services.json
+ - ios/Runner/GoogleService-Info.plist
+ - lib/firebase_options.dart
+
+Update Android for Firebase:
+- android/app/build.gradle > android > compileSdk > 34
+- android/app/build.gradle > android > defaultConfig > minSdkVersion > 21
+- update w/ multidex
+ - first run on an Android emulator / device should fix it automatically
+
+Update iOS for Firebase:
+- ios/Podfile > uncomment line 2 & set to 14.0
+- ios/Runner.xcodeproj > (Project) Runner > Info > iOS Deployment Target > 14.0
+ - check warnings > update > Perform Changes
+- note: no pods to update here yet; gets updated w/ pod update below
+- ios/Podfile > update post_install w/
+ post_install do |installer|
+    installer.pods_project.targets.each do |target|
+      flutter_additional_ios_build_settings(target)
+      target.build_configurations.each do |config|
+      xcconfig_path = config.base_configuration_reference.real_path
+      xcconfig = File.read(xcconfig_path)
+      xcconfig_mod = xcconfig.gsub(/DT_TOOLCHAIN_DIR/, "TOOLCHAIN_DIR")
+      File.open(xcconfig_path, "w") { |file| file << xcconfig_mod }
+      end
+    end
+  end
+- update Pods
+ - cd ios
+ - pod update
+- note: disable sandboxing was already done
+ - ios/Runner.xcodeproj > Runner > Build Settings > Build Options > User Script Sandboxing > No
+
+Finish Firebase configuration:
+- firebase init
+- select features 
+ - firestore 
+ - functions
+- use existing project
+- [enter] for Firestore rules
+- [enter] for Firestore indexes json 
+- typescript for Cloud Functions
+- Yes enforce esLint
+- Yes install dependencies
+ - note: failed due to dependency conflict; see if pubspec versions are off and deal with below
+- update firestore.rules
+ - allow read, write: if request.auth != null;
+
+Initialize app and first test:
+- add to main
+ - import firebase_core and firebase_options
+ - async
+ - WidgetsFlutterBinding.ensureInitialized()
+ - await Firebase.initializeApp( options: DefaultFirebaseOptions.currentPlatform )
+- flutter run
+ - may take a couple of minutes
+- on Daco
+ - note: issues trying to run on Daco; the codesign spawned forever and had to restart (seemed to fix it)
+ - error when restarted and run due to Android adb; gonna try on Android (works)
+ - probably related to flutter_stripe; XCode error about Stripe, cleaning pods & flutter clean fixed it
+- on Pixel4a
+ - note: error running; was because flutter_stripe was left in the deps; removed and all good
+ - updated multidex, et al.
+- git changes
+
+Add current code:
+- easiest route > copy folders in lib from OG project to new project
+- copy main.dart
+- mass-change package names from "package:cruise_calls" to "package:ii_cruise_calls"
+ - review all files and re-order package listings
+- avoid enabling Google Maps & Firebase Messaging
+- remove Stripe related screens and functionality
+- gitignore secrets.dart
+- copy cloud functions
+ - index.ts, env/secrets.ts, gitignore, package.json & tsconfig.json
+ - sudo npm install
+- firebase deploy --only functions
+ - note: messed up; asked to update and try again in a few minutes (it worked)
+
+Add Google Maps:
+- enable APIs
+ - console.cloud.google.com > APIs & Services > Enabled APIs and Services > + ENABLE APIS AND SERVICES
+ - search "google maps"
+ - Maps SDK for Android > Enable (already)
+ - Maps SDK for iOS > Enable (already)
+ - note: both were already enabled for this account; had to generate 2 new keys (slightly different steps)
+- add Key Restrictions
+ - console.cloud.google.com > APIs & Services > Credentials > + CREATE CREDENTIALS
+ - Edit > 
+  - Name > iiCruiseCalls iOS Key
+  - Set an application restriction > iOS apps
+  - Add iOS app > co.islandInnovations.iiCruiseCalls
+  - (TBD) API Restrictions > Restrict key > Maps SDK for iOS
+   - note: restricted but will it cause issues; revisit
+  - Save
+  - Add key to secrets.dart
+ - console.cloud.google.com > APIs & Services > Credentials > + CREATE CREDENTIALS
+ - Edit > 
+  - Name > iiCruiseCalls Android Key
+  - Set an application restriction > Android apps
+  - Add Android app > Package name > co.islandInnovations.iiCruiseCalls
+  - Add Android app > SHA-1 certificate fingerprint 
+   - terminal > run > keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
+   - note: will need to replace with release down the road (?)
+  - (TBD) API Restrictions > Restrict key > Maps SDK for Android
+   - note: restricted but will it cause issues; revisit
+  - Save
+  - Add key to secrets.dart
+- make keys hidden but available
+ - note: cleaning up ios/Flutter/Debug & Release first
+  - git rm --cached ios/Flutter/Debug.xcconfig
+  - git rm --cached ios/Flutter/Release.xcconfig
+  - add both to gitignore
+  - git changes
+- iOS hidden keys and handle permissions
+ - ios/Runner/AppDelegate.swift
+  - import GoogleMaps
+  - add above GeneratedPluginRegistrant > GMSServices.provideAPIKey(Bundle.main.object(forInfoDictionaryKey:"googleMapsApiKey") as? String ?? "")
+ - ios/Flutter/Debug.xcconfig
+  - add GOOGLE_MAPS_API_KEY=ABC_This_Is_Literally_The_Secret_Key_Value_XYZ
+ - ios/Flutter/Release.xcconfig
+  - add GOOGLE_MAPS_API_KEY=ABC_This_Is_Literally_The_Secret_Key_Value_XYZ
+ - ios/Runner/Info.plist > add Google Maps key and string
+	<key>googleMapsApiKey</key>
+	<string>$(GOOGLE_MAPS_API_KEY)</string>
+ - ios/Runner/Info.plist > add location permission information
+  <key>NSBonjourServices</key>
+	<array>
+		<string>_dartobservatory._tcp</string>
+	</array>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app uses a package that can access your location. It should not ask to use your location.</string>
+	<key>NSLocationUsageDescription</key>
+	<string>This app uses a package that can access your location. It should not ask to use your location.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app uses a package that can access your location. It should not ask to use your location.</string>
+  <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app uses a package that can access your location. It should not ask to use your location.</string>
+ - ios/Podfile > add permission handling for Permission plugin (after first end)
+    target.build_configurations.each do |config|
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        '$(inherited)',
+        ## dart: [PermissionGroup.location, PermissionGroup.locationAlways, PermissionGroup.locationWhenInUse]
+        'PERMISSION_LOCATION=1',
+        ## dart: PermissionGroup.notification
+        'PERMISSION_NOTIFICATIONS=1',
+      ]
+    end
+  - note: adding notifications while I'm here
+- Android hidden keys and handle permissions
+ - android/app/src/main/AndroidManifest.xml > add permissions right after <manifest>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+  - note: adding notifications while I'm here 
+ - android/app/src/main/AndroidManifest.xml > add api key reference meta-data tag below flutterEmbedding meta-data tag
+  <meta-data 
+    android:name="com.google.android.geo.API_KEY"
+    android:value="${gmpKey}"/>
+ - android/local.properties > add segment.gmpKey=ABC_This_Is_Literally_The_Secret_Key_Value_XYZ
+ - android/app/build.gradle > add at the end of the def section
+  def gmpKey = localProperties.getProperty('segment.gmpKey')
+  if (gmpKey == null) {
+      gmpKey = "no_key"
+  }
+ - android/app/build.gradle > android > defaultConfig > add below versionName
+  manifestPlaceholders += [gmpKey: gmpKey]
+- git changes
+
+Add push notifications & cloud messaging:
+- set Android channel, icon & intent
+ - android/app/src/main/AndroidManifest.xml > after </intent-filter> add
+  <intent-filter>
+      <action android:name="FLUTTER_NOTIFICATION_CLICK"/>
+      <category android:name="android.intent.category.DEFAULT"/>
+  </intent-filter>
+  <intent-filter>
+      <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+  </intent-filter>
+ - android/app/src/main/AndroidManifest.xml > after </activity> add
+  <meta-data 
+      android:name="com.google.firebase.messaging.default_notification_channel_id"
+      android:value="@string/default_notification_channel_id" />
+  <meta-data 
+      android:name="com.google.firebase.messaging.default_notification_icon" 
+      android:resource="@drawable/icon_small" />
+ - android/app/src/main/res/drawable > add "icon_small.png"
+ - android/app/src/main/res/values > add strings.xml (see previous xml for content)
+ - note: what about the keystore (?)
+  - update: occurs when we go to deploy on Google Play Store
+- enable Push Notifications for iOS
+ - ios/Runner.xcodeproj > (Targets) Runner > Signing & Capabilities > +Capabilities > Push Notifications
+ - ios/Runner.xcodeproj > (Targets) Runner > Signing & Capabilities > +Capabilities > Background Modes
+  - enable Background fetch 
+  - enable Remote notifications
+ - ios/Runner/Info.plist > enable scene manifest 
+  <key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UISceneConfigurations</key>
+		<dict/>
+	</dict>
+ - ios/Runner/Info.plist > enable background modes
+  <key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
+- link APN w/ FCM for iOS
+ - sign into developer.apple.com (Island Innovations selected) > Certificates, IDs & Profiles > Keys > +
+  - Key Name: iiCruiseCallsFbCnAPNS
+  - enable Apple Push Notification service (APNs)
+   - note: can't create a new one (Apple only allows 2); going to see if we can re-use the current CruiseCallsAPN
+   - update: those were the wrong ones to reuse; revoked one of Island Innovations and moving foward
+  - downloaded p8 to secure area
+  - copy Key ID (PN6JP5X9W4)
+ - go to Firebase Project > Settings > Cloud Messaging > iOS app configuration > Upload
+  - browse & select p8
+  - copy & paste Key ID 
+  - enter Team ID (https://developer.apple.com/account/ > Membership details / top right next to Org name)
+ - update App Identifier
+  - developer.apple.com > Certificates, IDs & Profiles > Identifiers > select XC co islandInnovations iiCruiseCalls
+  - Push Notifications (enabled if not) > Configure
+  - create SSL certifications 
+   - Development > Create Certificate
+    - Applications > Utilities > Keychain Access > Certificate Assistant > Request a Certificate from a Certified Authority
+     - User Email Address: david@portcall.com
+     - leave CA Email blank
+     - Request is: Saved to disk
+     - Put with secrets
+    - Upload .certSigningRequest
+   - Production > Create Certificate
+    - Applications > Utilities > Keychain Access > Certificate Assistant > Request a Certificate from a Certified Authority
+     - User Email Address: david@portcall.com
+     - leave CA Email blank
+     - Request is: Saved to disk
+      - Append file name with "-Production"
+     - Put with secrets
+    - Upload .certSigningRequest
+ - generate provisioning profile
+  - developer.apple.com > Certificates, IDs & Profiles > Profiles > +
+  - iOS App Development > Select an App ID > select App Identifier (XC co islandInnovations iiCruiseCalls)
+  - select certificate (David Corso | Development)
+  - select testing device (Daco)
+  - create name (iiCruiseCalls PP)
+  - Generate
+  - Download and secret
+  - Double click .mobileprovision file to install
+   - note: error via xcode about it being unable to delete the build; ran flutter clean and double clicked again
+   - should be able to Perform Changes to update / clear errors 
+   - trying flutter run (no luck)
+   - restarted the laptop, flutter clean, flutter build ios, gonna wait awhile..; clicked Run in Xcode
+   - now it doesn't recognize GoogleMaps in AppDelegate.swift
+   - solution: a combination of restarting the comp, flutter clean, deleting Pods folder and .lock, flutter pub get, pod install, pod update, and then letting the app build (~5 min) and we're g2g 
+- Firebase Console > Project Settings > Cloud Messaging > verify its enabled
+ - if not, 3 dots / menu > Manage > Enable 
+- Manually added areas to database
+ - Updated rules on Firebase console and in firestore.rules
+ - Any one can read `areas`
+- Testing to make sure everything works as expected
+ - Notifications work on iOS & Android
+ - Map is working on iOS & Android, but need to see about release
+  - note: I believe Android needs extra stuff (key, store file, keystore, etc)
+  - flutter run --release seems OK; will work thru it once we upload to the stores
+- git changes
+
+Add In-App Purchases:
+- verify appstoreconnect Agreements, Tax, and Banking are all in order
+ - appstoreconnect.apple.com/business > Agreements
+  - EU DSA Compliance
+  - Tax Form(s)
+  - Add Bank Account 
+- upload app to appstoreconnect to Manage In-App Purchases
+ - pubspec.yaml version > 1.0.0+1
+ - ios/Runner.xcodeproj > (Targets) Runner > General > Identity > Version to 1.0.0 & Build to 1
+ - verify Runner.xcodeproj & Runner.xcworkspace have minimum deployment @ 14.0
+ - ios/Flutter/AppFrameworkInfo.plist > update MinimumOSVersion to 14.0
+ - flutter build ipa 
+ - build/ios/archive/Runner.xcarchive > double click / open
+ - Distribute App
+  - App Store Connect > Distribute
+  - Name > CruiseCalls
+   - note: had to remove the FF CruiseCalls app first (removed availability from all countries)
+ - appstoreconnect.apple.com/apps > iiCruiseCalls > TestFlight > Create Group
+  - iiTesters > added Bryan & David 
+ - appstoreconnect.apple.com/apps > iiCruiseCalls > TestFlight > Builds > iOS > Manage Missing Compliance
+  - None (algorithms)
+- create In-App Purchases
+ - test create a "true" In-App (to see what happens) and Subscription
+ - appstoreconnect.apple.com/apps > iiCruiseCalls > Distribution > Monetization > In-App Purchases > Create
+  - Bollard / bollard12345
+  - Availability > only US
+  - Price > $0.99
+  - Localization > Bollard / Bollards be ball'n.
+  - Image
+  - Review screenshot & notes 
+  - Save > Ready to Submit
+ - appstoreconnect.apple.com/apps > iiCruiseCalls > Distribution > Monetization > Subscriptions > Create
+  - CruiseCalls (Group)
+  - Subscriptions > Create
+   - Reference Name > Simple
+   - Product ID > Simple12345
+   - Subscription Duration > 1 month
+   - Availability > All countries / regions
+   - Price > $4.99
+   - Localization > Simple Subscription / Receive schedules and notifications.
+   - Image
+   - Review screenshot & notes
+   - Save
+  - Subscriptions > Subscription Groups > App Store Localization > Create 
+   - Display Name > Simple CC Subscription
+   - Use App Name
+ - should be g2g
+- setup Google Play 
+ - terminal > keytool -genkey -v -keystore ~/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+  - Pass: Hawaii plus Durham (classic)
+  - David Corso / Island Innovations / Island Innovations Ltd / Durham / North Carolina / US
+  - move .jks from papadaco to secrets
+  - copy to android/app/
+   - auto-gitignore'd
+  - android > create key.properties
+   storePassword=Hawaii plus Durham (classic)
+   keyPassword=Hawaii plus Durham (classic)
+   keyAlias=upload
+   storeFile=./upload-keystore.jks
+  - android/app/bundle.gradle > add keystoreProperties above localProperties
+   def keystoreProperties = new Properties()
+   def keystorePropertiesFile = rootProject.file('key.properties')
+   if (keystorePropertiesFile.exists()) {
+      keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+   }
+  - android/app/bundle.gradle > android > add signingConfigs above buildTypes
+    signingConfigs {
+        release {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+            storePassword keystoreProperties['storePassword']
+        }
+    }
+  - android/app/bundle.gradle > android > buildTypes > release > signingConfig to .release
+ - flutter build appbundle
+ - play.google.com/console/ > david@portcall.com > Island Innovations > Create app
+  - CruiseCalls / App / Paid / Checked both > Create app
+  - Production > Create new release
+  - (?) Get integrity protection
+   - note: not sure if necessary and I cant' figure out how to finish
+   - Setup integrity API
+   - Link Cloud project > select ii-cruise-calls > Link 
+   - Integrate Integrity API
+    - console.cloud.google.com > APIs & Services > + ENABLE APIS & SERVICES > search Play Integrity > Google Play Integrity API > Enable
+     - (?) Create Credentials 
+    - Pause finishing integration; unclear how to implement in app / finish on console
+   - Play app signing
+    - Set up app signing
+  - Choose signing key
+   - Use Google generated key
+  - Upload 
+   - note: skip this and go to Testers first
+   - ii_cruise_calls/build/apps/outputs/bundle/release > app-release.aab
+   - Release Name: 1.0.0+1
+   - Release notes from STORE.md
+   - Next 
+  - 4 errors
+  - Go to App access > All or some functionality in my app is restricted > + Add instructions
+   - Access CruiseCalls for Free 
+   - Access CruiseCalls Paid Tier
+  - Back to releases overview > Warnings > Go to (health) declaration
+   - My app does not have any health features > Save
+  - Back to releases overview > Error > Go to Sensitive app permissions 
+   - Location Permissions
+    - Purpose, Access, video w/ link
+  - Go to Dashboard > Set up your app
+   - Set privacy policy
+    - app-privacy-policy-generator.firebaseapp.com
+    - add to cruisecalls.app > https://cruisecalls.app/#/privacyPolicy
+   - Ads 
+   - Content Ratings
+   - Target Audience
+   - News App
+   - Data Safety
+   - Government apps
+   - Financial features 
+  - Set up pricing > Create a merchant account
+
+  - App Category & Store Listing (still doing)
+   - Description, images, etc.
+  
+
+
+  - Go to Dashboard > Start testing > Select Internal Testers > CruiseCallTesters
+   - Save 
+  - Go to Dashboard > Warnings > Go to (health) declaration
+   - My app does not have any health features > Save
+  - Go to 
+
+
+  - (Dashboard) > Preview and confirm release > Edit Release > Nope.. Not this
+   -
+
+
+
+TODO:
+1. Update payment method under PortCall.com / david@portcall.com Blaze plan
+
+
+
+
+
+https://codelabs.developers.google.com/codelabs/flutter-in-app-purchases#4
+
+https://developer.apple.com/in-app-purchase/#create-in-app-purchases
+https://developer.apple.com/help/app-store-connect/configure-in-app-purchase-settings/overview-for-configuring-in-app-purchases/
+
+https://pub.dev/packages/in_app_purchase
+https://pub.dev/packages/purchases_flutter
+
+https://medium.com/@ronakofficial/in-app-purchase-in-flutter-9d0536dc5990
+https://stackoverflow.com/questions/77292451/do-i-really-need-a-backend-for-in-app-purchases

@@ -233,7 +233,7 @@ initialize
 - select Typescript
 - use ESLint
 - install NPM dependencies
-add functions in index.tsx
+add functions in index.ts
 - use only "send" and "sendMulticast" for now (?) 
 (?) check java is updated on mac
 firebase init emulators

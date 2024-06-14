@@ -320,6 +320,9 @@ Add push notifications & cloud messaging:
 - git changes
 
 Add In-App Purchases:
+- pub.dev
+ - in_app_purchase
+ - in_app_purchase_storekit
 - verify appstoreconnect Agreements, Tax, and Banking are all in order
  - appstoreconnect.apple.com/business > Agreements
   - EU DSA Compliance
@@ -394,10 +397,16 @@ Add In-App Purchases:
         }
     }
   - android/app/bundle.gradle > android > buildTypes > release > signingConfig to .release
+  - android/app/src/main/AndroidManifest.xml > application tag
+   - add android:enableOnBackInvokedCallback="true"
+  - main.dart
+   - add InAppPurchaseStoreKitPlatform.registerPlatform();
  - flutter build appbundle
  - play.google.com/console/ > david@portcall.com > Island Innovations > Create app
   - CruiseCalls / App / Paid / Checked both > Create app
   - Production > Create new release
+   - note: yes this eventually, but to test do Release > Testing > Closed testing
+   - results in Google doing a code review and THEN we can access play store products
   - (?) Get integrity protection
    - note: not sure if necessary and I cant' figure out how to finish
    - Setup integrity API
@@ -437,6 +446,37 @@ Add In-App Purchases:
    - Government apps
    - Financial features 
   - Set up pricing > Create a merchant account
+   - David didn't have permission(s); Bryan clicked thru / linked the basics
+  - Add in-app purchases
+   - Monetize > In-app products > Create product > copied App Store
+   - Monetize > Subscription > Create subscription > copied App Store 
+    - Add base plan > fill out info, select Type, add Tag(s), and Set prices for all countries
+    - Activate
+  - (there might have been another step or 2 here; mainly just need to get the Closed testing track up and out)
+(note: there's a lot of trial and error codding going on atm; will try to sythensize as best as can)
+- add code to project: frontend
+ - note: going to simplify for now
+ - PurchasesBloc
+ - InAppPurchasesRepository
+ - PastPuchaseModel
+ - PurchasableProductModel
+ - InfoPaymentScreen and related widgets
+- add code to project: backend
+ - App Store 
+  - npm i app-store-server-api
+   - follow "Create a client" on npm page
+  - appstoreconnect.apple.com > Users and Access > Integrations > In-App Purchase > Generate In-App Purchase Key > CruiseCalls IAP Key
+  - create a cloud function and deploy it to appstoreconnect
+   - Apps > CruiseCalls > App Information > App Store Server Notifications > Sandbox vs Production 
+    - Add url and select v2
+  - see current example for code logic / function(s)
+ - Google Play 
+  - npm i googleapis
+
+
+- add Firestore rule for purchases (?)
+- 
+
 
   - App Category & Store Listing (still doing)
    - Description, images, etc.
@@ -470,5 +510,17 @@ https://developer.apple.com/help/app-store-connect/configure-in-app-purchase-set
 https://pub.dev/packages/in_app_purchase
 https://pub.dev/packages/purchases_flutter
 
+https://www.npmjs.com/package/app-store-server-api
+https://www.npmjs.com/package/googleapis
+
 https://medium.com/@ronakofficial/in-app-purchase-in-flutter-9d0536dc5990
 https://stackoverflow.com/questions/77292451/do-i-really-need-a-backend-for-in-app-purchases
+
+https://developer.apple.com/documentation/storekit/in-app_purchase/original_api_for_in-app_purchase/subscriptions_and_offers/enabling_app_store_server_notifications
+https://developer.apple.com/documentation/appstoreservernotifications/enabling_app_store_server_notifications
+https://developer.apple.com/documentation/appstoreservernotifications/responsebodyv2decodedpayload
+https://developer.apple.com/documentation/appstoreserverapi/get_all_subscription_statuses
+https://developer.apple.com/documentation/appstoreservernotifications/notificationtype
+
+https://medium.com/developers-keep-learning/verify-google-play-in-app-purchases-with-cloud-functions-8c97f3211616
+https://stackoverflow.com/questions/61088657/in-app-purchase-verify-using-cloud-function

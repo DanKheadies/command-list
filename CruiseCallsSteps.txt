@@ -209,6 +209,8 @@ Add Google Maps:
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
   - note: adding notifications while I'm here 
+  - note: Google Play rejected the app because we don't use the user's location for anything
+   - Removed these location permissions and am resubmitting; app builds fine
  - android/app/src/main/AndroidManifest.xml > add api key reference meta-data tag below flutterEmbedding meta-data tag
   <meta-data 
     android:name="com.google.android.geo.API_KEY"
@@ -434,6 +436,7 @@ Add In-App Purchases:
   - Back to releases overview > Error > Go to Sensitive app permissions 
    - Location Permissions
     - Purpose, Access, video w/ link
+    - note: didn't actually need; caused issues trying to remove from EVERY upload / release
   - Go to Dashboard > Set up your app
    - Set privacy policy
     - app-privacy-policy-generator.firebaseapp.com
@@ -453,6 +456,12 @@ Add In-App Purchases:
     - Add base plan > fill out info, select Type, add Tag(s), and Set prices for all countries
     - Activate
   - (there might have been another step or 2 here; mainly just need to get the Closed testing track up and out)
+ - provide test link to testers to allow IAP API transaction to work via Android 
+  - make sure the email is in the Testers group for the app
+  - Join on the web > Copy link
+ - license users to test
+  - Google Play console > Settings > License testing > select user(s) / group(s)
+ - the versionCode of your uploaded apk has the same versionCode as your local version of the apk
 (note: there's a lot of trial and error codding going on atm; will try to sythensize as best as can)
 - add code to project: frontend
  - note: going to simplify for now
@@ -471,7 +480,38 @@ Add In-App Purchases:
     - Add url and select v2
   - see current example for code logic / function(s)
  - Google Play 
-  - npm i googleapis
+  - (RIP) npm i googleapis
+  - create a cloud function to be deployed below
+  - Google Cloud > Google Play Android Developer API > Enable
+   - (?) Create Credentials
+  - Google Cloud > IAM & Admin > Service Accounts > + Create Service Account
+   - CruiseCalls Google Service
+   - Select a role > Pub/Sub Admin
+  - Google Cloud > IAM & Admin > Service Accounts > CruiseCalls Google Service > Manage keys
+   - Add Key
+   - (?) move downloaded json to functions > src > env > folder
+    - gitignore (verified)
+  - Google Cloud > search Pub/Sub > + Create topic
+   - server-notifications
+    - projects/ii-cruise-calls-5866c/topics/server-notifications
+   - Subscriptions > click server-notifications-sub > Edit
+    - Delivery type > Push
+    - add Enpoint URL > https://playstoreserverconnector-rfzqyzjsqa-uc.a.run.app
+    - Update / Save
+  - Google Cloud > Pub/Sub > server-notifications sub menu > View Permissions
+   - Permissions > Add Principal
+    - New > google-play-developer-notifications@system.gserviceaccount.com
+    - Role > Pub/Sub Publisher
+    - Save
+  - Google Play Console > CruiseCalls app > Monetize > Monetization setup
+   - Enable real-time notifications
+   - Topic name > projects/ii-cruise-calls-5866c/topics/server-notifications
+   - Send test > verify cloud function logs show activity
+   - Save changes
+  
+
+  - current Google Play account permissions (all) are g2g
+  - see current example for code logic / function(s)
 
 
 - add Firestore rule for purchases (?)
@@ -512,6 +552,9 @@ https://pub.dev/packages/purchases_flutter
 
 https://www.npmjs.com/package/app-store-server-api
 https://www.npmjs.com/package/googleapis
+
+https://developer.android.com/google/play/billing/rtdn-reference#encoding
+https://medium.com/@faiqmahmood/in-app-purchases-server-notification-19e4cb341977
 
 https://medium.com/@ronakofficial/in-app-purchase-in-flutter-9d0536dc5990
 https://stackoverflow.com/questions/77292451/do-i-really-need-a-backend-for-in-app-purchases

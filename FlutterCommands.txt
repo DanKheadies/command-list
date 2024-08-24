@@ -119,11 +119,11 @@ update pubspec.yaml version
 open Runner.xcodeproj
 - update version #
 - update build #
-- check minimum deployment (13.0)
+- check minimum deployment (14.0)
 open Runner.xcworkspace
-- check minimum deployment in Runner & Pods (13.0)
+- check minimum deployment in Runner & Pods (14.0)
 open ios > Flutter > AppFrameworkInfo.plist 
-- update MinimumOSVersion (13.0)
+- update MinimumOSVersion (14.0)
 (ios) flutter build ipa
 (ios) submit a build
 - open newly created archive (see vs code output)

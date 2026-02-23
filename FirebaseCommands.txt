@@ -55,6 +55,7 @@ android
  - open android simulator
  - flutter run (down below) and it will ask / setup automatically
 iOS
+- (8/23/25 -- newest Flutter installs require iOS 15)
 - podfile
  - uncomment line 2 in Podfile & make sure it's 13.0 (for now)
 - minimum deployment in Runner.xcodeproj > Runner > Info > iOS Deployment Target 
@@ -104,6 +105,11 @@ web
 - set public directory to 'build/web' 
 - configure as single page 'N'
 - (?) setup auto deploys w/ github (n)
+gitignore
+- # Firebase 
+ - /android/app/google-services.json
+ - /ios/Runner/GoogleService-Info.plist
+ - /lib/firebase_options.dart
 initialize in main
 - import firebase_core and firebase_options
 - async

@@ -1,0 +1,6 @@
+1. Make sure terminal output is in json
+    var json = jsonEncode(object.toJson());
+    print(json);
+2. Copy terminal output to a new file and save as .json
+3. Replace all "\n" with Regular Expression (.* icon) active
+4. Save
